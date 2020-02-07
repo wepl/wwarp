@@ -4,7 +4,7 @@ DOSIO_I=1
 ;  :Author.	Bert Jahn
 ;  :Contens.	macros for input/output via dos.library
 ;  :EMail.	wepl@whdload.de
-;  :Version.	$Id: dosio.i 1.7 2008/05/06 22:01:00 wepl Exp wepl $
+;  :Version.	$Id: dosio.i 1.9 2014/01/29 00:04:15 wepl Exp wepl $
 ;  :History.	30.12.95 separated from WRip.asm
 ;		18.01.96 IFD Label replaced by IFD Symbol
 ;			 because Barfly optimize problems
@@ -17,16 +17,9 @@ DOSIO_I=1
 ;		13.01.00 _GetKey added
 ;		28.06.00 gloabal variable from _GetKey removed
 ;		26.04.08 _PrintMore added
+;		27.05.19 fix args for dos.IsInteractive in PrintMore
+;			 timeout if terminal doesn't replies to control sequences
 ;  :Requires.	-
-;  :Copyright.	This program is free software; you can redistribute it and/or
-;		modify it under the terms of the GNU General Public License
-;		as published by the Free Software Foundation; either version 2
-;		of the License, or (at your option) any later version.
-;		This program is distributed in the hope that it will be useful,
-;		but WITHOUT ANY WARRANTY; without even the implied warranty of
-;		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;		GNU General Public License for more details.
-;		You can find the full GNU GPL online at: http://www.gnu.org
 ;  :Language.	68000 Assembler
 ;  :Translator.	BASM 2.16
 ;---------------------------------------------------------------------------*
@@ -45,8 +38,10 @@ DOSIO_I=1
 *##	_PrintLn	outputs a linefeed
 *##	_PrintMore	outputs a string(a0) with more/less pipe
 
-	dc.b	"$Id: dosio.i 1.7 2008/05/06 22:01:00 wepl Exp wepl $",10,0
+	IFND NOIDSTRING
+	dc.b	"$Id: dosio.i 1.9 2014/01/29 00:04:15 wepl Exp wepl $",10,0
 	EVEN
+	ENDC
 
 		IFND	STRINGS_I
 			INCLUDE	strings.i
@@ -145,7 +140,7 @@ _PrintMore	movem.l	d2-d7/a2-a3/a6,-(a7)
 		jsr	(_LVOOutput,a6)
 		move.l	d0,d6				;D6 = output
 
-		move.l	d7,a1
+		move.l	d7,d1
 		jsr	(_LVOIsInteractive,a6)
 		tst.l	d0
 		bne	.interactive
@@ -184,14 +179,8 @@ _PrintMore	movem.l	d2-d7/a2-a3/a6,-(a7)
 		bsr	.write
 
 .wait		move.l	d7,d1
-		move.l	#1000000,d2			;microseconds
-		jsr	(_LVOWaitForChar,a6)
-		tst.l	d0
-		beq	.wait
-
-		move.l	d7,d1
 		move.l	a7,d2
-		moveq	#HLPBUFLEN-1,d3
+		moveq	#2,d3
 		jsr	(_LVORead,a6)
 
 		lea	.space,a2
@@ -239,17 +228,33 @@ _PrintMore	movem.l	d2-d7/a2-a3/a6,-(a7)
 		movem.l	(a7)+,_MOVEMREGS
 		rts
 
+        ;get window dimensions
 .getwin		move.l	d7,d1
 		jsr	(_LVOFlush,a6)
 
 		lea	.wsr,a0
 		bsr	.write
 
+	IFD DEBUG
+		clr.l	(4,a7)				;terminate string for debug output
+	ENDC
+
+        ;if terminal is not answering break the detection
+		move.l	d7,d1
+		move.l	#100000,d2			;microseconds
+		jsr	(_LVOWaitForChar,a6)
+		tst.l	d0
+		beq	.getwin_err
+
 		move.l	d7,d1
 		move.l	a7,d2
-		addq.l	#4,d2
+		addq.l	#4,d2				;skip return address
 		moveq	#HLPBUFLEN-1,d3
 		jsr	(_LVORead,a6)
+
+	IFD DEBUG
+		clr.b	(4,a7,d0.l)			;terminate string for debug output
+	ENDC
 
 		cmp.l	#10,d0
 		bls	.getwin_err
