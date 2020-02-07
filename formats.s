@@ -17,6 +17,7 @@
 ;		12.02.04 wwf_info added
 ;		05.10.04 twilight2/3 added
 ;		04.11.04 added rnclold
+;		07.02.20 fixed structures for unknown/raw
 ;  :Requires.	OS V37+, MC68020+
 ;  :Copyright.	©1998-2001 Bert Jahn, All Rights Reserved
 ;  :Language.	68020 Assembler
@@ -35,7 +36,6 @@
 
 _format_unknown	dc.l	0		;succ
 		dc.l	0		;decode
-		dc.l	0		;decode force
 		dc.l	0		;encode
 		dc.l	0		;info
 		dc.l	_name_unknown	;name
@@ -51,7 +51,6 @@ _format_unknown	dc.l	0		;succ
 
 _format_raw	dc.l	_formats	;succ
 		dc.l	0		;decode
-		dc.l	0		;decode force
 		dc.l	0		;encode
 		dc.l	0		;info
 		dc.l	_name_raw	;name
@@ -66,7 +65,6 @@ _format_raw	dc.l	_formats	;succ
 		dc.w	0		;flags
 
 _formats
-
 .std		dc.l	.stdf		;succ
 		dc.l	_decode_std	;decode
 		dc.l	0		;encode
