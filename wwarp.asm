@@ -44,6 +44,7 @@
 ;		24.05.07 option NoFmt/K added
 ;		23.04.08 added support for 40 tracks 5.25" drives (Mark)
 ;			 tracktable compression added, _expandtt fixed
+;		06.06.19 adapted for vamos build
 ;  :Requires.	OS V37+, MC68020+
 ;  :Copyright.	©1998-2008 Bert Jahn, All Rights Reserved
 ;  :Language.	68020 Assembler
@@ -224,17 +225,15 @@ GL	EQUR	A4		;a4 ptr to Globals
 LOC	EQUR	A5		;a5 for local vars
 CPU	=	68020
 
-	OUTPUT	C:WWarp
 	BOPT	O+		;enable optimizing
-	BOPT	OG+		;enable optimizing
 	BOPT	ODd-		;disable mul optimizing
 	BOPT	ODe-		;disable mul optimizing
 	BOPT	wo-		;no optimize warnings
 	BOPT	sa+		;write symbol hunks
 
 	IFND	.passchk
-	DOSCMD	"WBuild >T:build"
-	DOSCMD	"WDate  >T:date"
+	DOSCMD	"WBuild >NIL:"
+	DOSCMD	"WDate >.date"
 .passchk
 	ENDC
 
@@ -247,16 +246,16 @@ Revision	= 28
 
 		dc.b	"$VER: "
 _txt_creator	sprintx	"WWarp %ld.%ld [build ",Version,Revision
-		INCBIN	"T:build"
+		INCBIN	".build"
 		dc.b	"] "
-		INCBIN	"T:date"
+		INCBIN	".date"
 		dc.b	0
 		dc.b	"$Id: wwarp.asm 1.69 2008/05/06 21:39:36 wepl Exp wepl $",0
 	EVEN
 
 ;##########################################################################
 
-	INCDIR	Sources:
+	INCDIR	sources
 	INCLUDE	dosio.i
 		CheckBreak
 		FlushOutput
@@ -2773,9 +2772,9 @@ _tddisable81	tst.b	(gl_tdpatchdone,GL)
 
 _txt_help	dc.b	155,"1m"
 		sprintx	"WWarp %ld.%ld [build ",Version,Revision
-	INCBIN	"T:build"
+	INCBIN	".build"
 		dc.b	"] "
-	INCBIN	"T:date"
+	INCBIN	".date"
 		dc.b	155,"0m",10,155,"4msynopsis:",155,"0m",10
 		dc.b	"	WWarp filename[.wwp] [command] [tracks] [args] [options...]",10
 		dc.b	155,"4mcommands:",155,"0m",10
