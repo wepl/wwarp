@@ -11,16 +11,9 @@ ERROR_I=1
 ;		17.01.99 _PrintError* optimized
 ;		26.12.99 fault string initialisation added in _PrintErrorDOS
 ;		27.04.08 _PrintErrorDOSFH/Name added
+;		17.01.19 _PrintError print "unspecified error" if error is missing
 ;  :Requires.	-
-;  :Copyright.	This program is free software; you can redistribute it and/or
-;		modify it under the terms of the GNU General Public License
-;		as published by the Free Software Foundation; either version 2
-;		of the License, or (at your option) any later version.
-;		This program is distributed in the hope that it will be useful,
-;		but WITHOUT ANY WARRANTY; without even the implied warranty of
-;		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;		GNU General Public License for more details.
-;		You can find the full GNU GPL online at: http://www.gnu.org
+;  :Copyright.	All rights reserved.
 ;  :Language.	68000 Assembler
 ;  :Translator.	BASM 2.16
 ;---------------------------------------------------------------------------*
@@ -61,7 +54,12 @@ PRINTERROR = 1
 		ENDC
 
 _PrintError	movem.l	d0/a1,-(a7)
-		move.l	a0,-(a7)
+		move.l	a0,d0
+                beq     .def
+                tst.b   (a0)
+		bne	.set
+.def		lea	(.unspecified),a0
+.set		move.l	a0,-(a7)
 		lea	(.txt),a0
 		move.l	a7,a1
 		bsr	_PrintArgs
@@ -69,6 +67,7 @@ _PrintError	movem.l	d0/a1,-(a7)
 		rts
 		
 .txt		dc.b	155,"1m%s",155,"22m (%s/%s)",10,0
+.unspecified	dc.b	"unspecified error",0
 		EVEN
 	ENDC
 		ENDM
