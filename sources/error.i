@@ -11,7 +11,8 @@ ERROR_I=1
 ;		17.01.99 _PrintError* optimized
 ;		26.12.99 fault string initialisation added in _PrintErrorDOS
 ;		27.04.08 _PrintErrorDOSFH/Name added
-;		17.01.19 _PrintError print "unspecified error" if error is missing
+;		17.01.20 _PrintError print "unspecified error" if error is missing
+;		12.02.20 _PrintError print "unspecified error" also on "0"
 ;  :Requires.	-
 ;  :Copyright.	All rights reserved.
 ;  :Language.	68000 Assembler
@@ -55,8 +56,12 @@ PRINTERROR = 1
 
 _PrintError	movem.l	d0/a1,-(a7)
 		move.l	a0,d0
-                beq     .def
-                tst.b   (a0)
+		beq	.def
+		tst.b	(a0)
+		beq	.def
+		cmp.b	#"0",(a0)
+		bne	.set
+		tst.b	(1,a0)
 		bne	.set
 .def		lea	(.unspecified),a0
 .set		move.l	a0,-(a7)
