@@ -584,17 +584,8 @@ _cmdw_raw
 
 	;info
 		lea	(_writetrk),a0
-		move.w	(gl_trk+wth_num,GL),-(a7)
-		clr.w	-(a7)
-		move.l	a7,a1
+		lea	(gl_trk+wth_num,GL),a1
 		bsr	_PrintArgs
-		addq.l	#4,a7
-
-	;check if sync is set
-		lea	(gl_trk+wth_sync,GL),a0
-		bsr	_getsynclen
-		tst.l	d0
-		beq	_cmdw_nosyncset
 
 	;set raw write len
 	;length specified
@@ -623,6 +614,12 @@ _cmdw_raw
 		lea	(_writebytes),a0
 		bsr	_Print
 		bsr	_FlushOutput
+
+	;check if sync is set
+		lea	(gl_trk+wth_sync,GL),a0
+		bsr	_getsynclen
+		tst.l	d0
+		beq	_cmdw_nosyncset
 
 	;search and count syncs
 		bsr	_getsyncsearchlen
@@ -1437,7 +1434,7 @@ _calcspeed	movem.l	d2-d7/a2/a6,-(a7)
 		bra	.quit
 
 .textfail	dc.b	"couldn't estimate write length capability!",10,0
-.textlen	dc.b	" $",0
+.textlen	dc.b	" ",0
 .textsync	dc.b	" sync not found",10,0
 	EVEN
 

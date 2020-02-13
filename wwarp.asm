@@ -1370,11 +1370,8 @@ _cmd_sync	moveq	#0,d4			;D4 = sync specified
 		rts
 
 .badtype	lea	(_lenbadtype),a0
-.error		move.w	(gl_trk+wth_num,GL),-(a7)
-		clr.w	-(a7)
-		move.l	a7,a1
+.error		lea	(gl_trk+wth_num,GL),a1
 		bsr	_PrintArgs
-		add.w	#4,a7
 		moveq	#0,d0
 		rts
 
@@ -2851,7 +2848,7 @@ _lx		dc.b	"%02lx",0
 _amp		dc.b	"&",0
 _syncmismatch	dc.b	" sync/mask mismatch!",0
 _length		dc.b	" $%4lx.%ld $%04lx ",0
-_bitlen		dc.b	"%lx.%ld",0
+_bitlen		dc.b	"$%lx.%ld",0
 _syncnum	dc.b	",#%ld",0
 _synccnt	dc.b	" «%ld»",0
 _syncoff	dc.b	" %ld=",0
@@ -2888,16 +2885,16 @@ _encoder_fail	dc.b	"format encoder has failed",10,0
 _verifyerrsync	dc.b	"verify error, sync not found!",10,0
 _verifyerrdec	dc.b	"verify error, decoding failed!",10,0
 _verifyerrcmp	dc.b	"verify error, decoded data differs!",10,0
-_verifyerroff1	dc.b	"verify error first offset at $",0
-_verifyerroff2	dc.b	" last offset at $",0
+_verifyerroff1	dc.b	"verify error first offset at ",0
+_verifyerroff2	dc.b	" last offset at ",0
 _verifyerroff3	dc.b	" !",10,0
-_longtrk	dc.b	"track=$%lx too long to write using this drive=$",0
+_longtrk	dc.b	"track=$%lx too long to write using this drive=",0
 _wtrack		dc.b	"writing track %ld, format %s",10,0
 _notracks	dc.b	"error tracks must be specified",10,0
-_lesstrkdata1	dc.b	"error: $",0
-_lesstrkdata2	dc.b	" bytes are to less to write $",0
+_lesstrkdata1	dc.b	"error: ",0
+_lesstrkdata2	dc.b	" bytes are to less to write ",0
 _lesstrkdata3	dc.b	" bytes",10,0
-_writetrk	dc.b	"writing track %ld, $",0
+_writetrk	dc.b	"writing track %d, ",0
 _writebytes	dc.b	" bytes, ",0
 _writesuc	dc.b	"success.",10,0
 _baddrive	dc.b	"drive has %ld sectors, which isn't supported",10,0
