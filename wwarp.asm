@@ -238,7 +238,7 @@ CPU	=	68020
 	ENDC
 
 Version		= 1
-Revision	= 28
+Revision	= 29
 
 	SECTION a,CODE
 
@@ -394,13 +394,15 @@ _Start		lea	(_Globals),GL
 		tst.l	(gl_rd_import,GL)
 		bne	.noopendev
 		move.l	(gl_rd_cmd,GL),d0
-		beq	.opendev
+		beq	.opendev		;default cmd is Create
 		move.l	d0,a0
 		move.b	(a0),d0
 		UPPER	d0
 		cmp.b	#"C",d0
 		beq	.opendev
 		cmp.b	#"W",d0
+		beq	.opendev
+		cmp.b	#"Z",d0
 		bne	.noopendev
 .opendev	bsr	_OpenDevice
 		beq	.nodev
@@ -2689,7 +2691,7 @@ _PrintBold	pea	(a0)
 ;	A1 = APTR  ioreq
 ; OUT:	-
 
-_tdenable81	movem.l	d2,-(a7)
+_tdenable81	move.l	d2,-(a7)
 		cmp.w	#160,d0
 		blo	.end
 
