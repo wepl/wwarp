@@ -19,6 +19,7 @@ DOSIO_I=1
 ;		26.04.08 _PrintMore added
 ;		27.05.19 fix args for dos.IsInteractive in PrintMore
 ;			 timeout if terminal doesn't replies to control sequences
+;		14.02.20 _Print/_PrintArgs/_PrintInt return chars written
 ;  :Requires.	-
 ;  :Language.	68000 Assembler
 ;  :Translator.	BASM 2.16
@@ -32,9 +33,9 @@ DOSIO_I=1
 *##	_FlushOutput	flushes the output stream
 *##	_GetKey		--> key(d0)
 *##	_GetS		buffer(a0) buflen(d0) --> buffer(d0)
-*##	_Print		outputs a string(a0)
-*##	_PrintArgs	outputs formatstring(a0) expanded from argarray(a1)
-*##	_PrintInt	outputs a longint (d0)
+*##	_Print		outputs a string(a0) --> bytes written(d0)
+*##	_PrintArgs	outputs formatstring(a0) expanded from argarray(a1) --> bytes written(d0)
+*##	_PrintInt	outputs a longint (d0) --> bytes written(d0)
 *##	_PrintLn	outputs a linefeed
 *##	_PrintMore	outputs a string(a0) with more/less pipe
 
@@ -68,7 +69,7 @@ _PrintLn	lea	(.nl),a0
 ; Gibt FormatString gebuffert aus
 ; IN :	A0 = CPTR FormatString
 ;	A1 = STRUCT Array mit Argumenten
-; OUT :	-
+; OUT :	D0 = LONG bytes written, -1 on error
 
 PrintArgs	MACRO
 	IFND	PRINTARGS
@@ -86,7 +87,7 @@ _PrintArgs	movem.l	d2/a6,-(a7)
 ;----------------------------------------
 ; Gibt LongInt gebuffert aus
 ; IN :	D0 = LONG
-; OUT :	-
+; OUT :	D0 = LONG bytes written, -1 on error
 
 PrintInt	MACRO
 	IFND	PRINTINT
@@ -105,7 +106,7 @@ _PrintInt	clr.l	-(a7)
 ;----------------------------------------
 ; Gibt String gebuffert aus
 ; IN :	A0 = CPTR String
-; OUT :	-
+; OUT :	D0 = LONG bytes written, -1 on error
 
 Print		MACRO
 	IFND	PRINT
