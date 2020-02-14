@@ -5,6 +5,7 @@
 ;  :EMail.	wepl@whdload.de
 ;  :Version	$Id: cmdd.s 1.6 2008/05/06 21:54:18 wepl Exp wepl $
 ;  :History.	02.11.02 separated from wwarp.asm
+;		14.02.20 fix printing of long syncs
 ;  :Requires.	OS V37+, MC68020+
 ;  :Copyright.	©1998-2008 Bert Jahn, All Rights Reserved
 ;  :Language.	68020 Assembler
@@ -143,9 +144,8 @@ _cmd_dump	moveq	#0,d4			;D4 = sync specified
 		move.l	d5,-(a7)
 		lea	(_dump1),a0
 		move.l	a7,a1
-		bsr	_PrintArgs
+		bsr	_PrintArgs			;returns d0=ident
 		add.w	#6*4,a7
-		moveq	#30,d0				;ident
 		moveq	#0,d1				;flags
 		lea	(gl_trk+wth_sync,GL),a0		;sync
 		bsr	_printsync
@@ -283,12 +283,6 @@ _cmd_dump	moveq	#0,d4			;D4 = sync specified
 		bsr	_countsync
 		move.l	d0,d7				;offset
 		move.l	d1,-(a7)			;count
-		lea	(_syncfound1),a0
-		bsr	_Print
-		moveq	#30,d0				;ident
-		moveq	#0,d1				;flags
-		move.l	a2,a0				;sync
-		bsr	_printsync
 		tst.l	d7
 		bmi	.cs_2
 		lea	(_syncfound2),a0

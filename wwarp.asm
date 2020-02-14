@@ -45,6 +45,7 @@
 ;		23.04.08 added support for 40 tracks 5.25" drives (Mark)
 ;			 tracktable compression added, _expandtt fixed
 ;		06.06.19 adapted for vamos build
+;		14.02.20 fix printing of long syncs
 ;  :Requires.	OS V37+, MC68020+
 ;  :Copyright.	©1998-2008 Bert Jahn, All Rights Reserved
 ;  :Language.	68020 Assembler
@@ -2868,9 +2869,8 @@ _sync_less	dc.b	"error track %ld, too less syncs found!",10,0
 _dump1		dc.b	"track=%ld type=%s flags=%c%c len=$%4lx.%ld wlen=$%04lx sync=",0
 _badarg		dc.b	"Invalid [arg]",10,0
 _offerr		dc.b	"error, offset invalid",10,0
-_syncfound1	dc.b	"sync ",0
-_syncfound2	dc.b	" found %ld times, using #%ld offset $",0
-_syncfound3	dc.b	" found %ld times, using offset 0",10,0
+_syncfound2	dc.b	"sync found %ld times, using #%ld offset ",0
+_syncfound3	dc.b	"sync found %ld times, using offset 0",10,0
 _moreverifysync	dc.b	"warning %ld syncs found during verify, ",0
 _moresync	dc.b	"warning %ld syncs found using first, ",0
 _unknowntt	dc.b	"unknown track type",10,0
