@@ -20,6 +20,7 @@ DOSIO_I=1
 ;		27.05.19 fix args for dos.IsInteractive in PrintMore
 ;			 timeout if terminal doesn't replies to control sequences
 ;		14.02.20 _Print/_PrintArgs/_PrintInt return chars written
+;		19.02.20 missing ENDC in CheckBreak added
 ;  :Requires.	-
 ;  :Language.	68000 Assembler
 ;  :Translator.	BASM 2.16
@@ -413,7 +414,8 @@ _CheckBreak	move.l	a6,-(a7)
 .b		moveq	#-1,d0
 .end		move.l	(a7)+,a6
 		rts
-	ENDM
+	ENDC
+		ENDM
 
 ;----------------------------------------
 ; get line from file
