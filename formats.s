@@ -150,7 +150,7 @@ _turrican3a	dc.l	_turrican3b
 		INCLUDE	fmt_turrican3a_1800.s
 
 _turrican3b	dc.l	_ocean
-		INCLUDE	fmt_turrican3b_1a00.s
+		INCLUDE	fmt_turrican3b_1A00.s
 
 _ocean		dc.l	_vision
 		INCLUDE	fmt_ocean.s
