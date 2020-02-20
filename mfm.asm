@@ -3,10 +3,10 @@
 ;  :Contents.	decodes mfm data
 ;  :Author.	Bert Jahn
 ;  :EMail.	wepl@whdload.de
-;  :Address.	Clara-Zetkin-Strasse 52, Zwickau, 08058, Germany
 ;  :Version	$Id: mfm.asm 1.4 2005/04/07 23:37:04 wepl Exp wepl $
 ;  :History.	27.02.00 initial
 ;		23.03.05 assembler options adjusted
+;		20.02.20 adapted for vamos build
 ;  :Requires.	OS V37+
 ;  :Copyright.	© 2000-2005 Bert Jahn, All Rights Reserved
 ;  :Language.	68000 Assembler
@@ -44,6 +44,7 @@ LOC	EQUR	A5		;a5 for local vars
 CPU	=	68000
 
 	OUTPUT	C:mfm
+	IFD _BARFLY_
 	BOPT	O+		;enable optimizing
 	BOPT	OG+		;enable optimizing
 	BOPT	ODd-		;disable mul optimizing
@@ -51,8 +52,9 @@ CPU	=	68000
 	BOPT	wo-		;no optimize warnings
 
 	IFND	.passchk
-	DOSCMD	"WDate  >T:date"
+	DOSCMD	"WDate >.date"
 .passchk
+	ENDC
 	ENDC
 
 Version		= 0
@@ -64,14 +66,14 @@ Revision	= 1
 
 		dc.b	"$VER: "
 _txt_creator	sprintx	"mfm %ld.%ld ",Version,Revision
-		INCBIN	"T:date"
+		INCBIN	".date"
 		dc.b	0
 		dc.b	"$Id: mfm.asm 1.4 2005/04/07 23:37:04 wepl Exp wepl $",0
 	EVEN
 
 ;##########################################################################
 
-	INCDIR	Sources:
+	INCDIR	sources
 	INCLUDE	dosio.i
 		PrintArgs
 	INCLUDE	strings.i
@@ -199,7 +201,7 @@ _template	dc.b	"Odd/A"			;odd bits
 
 	SECTION g,BSS
 
-_Globals	dsb	gl_SIZEOF
+_Globals	ds.b	gl_SIZEOF
 
 ;##########################################################################
 
