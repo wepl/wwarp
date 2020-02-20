@@ -3,11 +3,10 @@
 ;  :Contents.	encodes data to mfm
 ;  :Author.	Bert Jahn
 ;  :EMail.	wepl@whdload.de
-;  :Address.	Feodorstraße 8, Zwickau, 08058, Germany
 ;  :Version	$Id: encode.asm 1.2 2005/04/07 23:36:50 wepl Exp wepl $
 ;  :History.	06.02.02 initial
+;		20.02.20 adapted for vamos build
 ;  :Requires.	OS V37+
-;  :Copyright.	© 2002 Bert Jahn, All Rights Reserved
 ;  :Language.	68000 Assembler
 ;  :Translator.	Barfly V2.9
 ;  :To Do.
@@ -42,14 +41,16 @@ LOC	EQUR	A5		;a5 for local vars
 CPU	=	68000
 
 	OUTPUT	C:encode
+	IFD _BARFLY_
 	BOPT	O+			;enable optimizing
 	BOPT	OG+			;enable optimizing
 	BOPT	ODd-			;disable mul optimizing
 	BOPT	ODe-			;disable mul optimizing
 
 	IFND	.passchk
-	DOSCMD	"WDate  >T:date"
+	DOSCMD	"WDate  >.date"
 .passchk
+	ENDC
 	ENDC
 
 Version		= 1
@@ -61,14 +62,14 @@ Revision	= 0
 
 		dc.b	"$VER: "
 _txt_creator	sprintx	"encode %ld.%ld ",Version,Revision
-		INCBIN	"T:date"
+		INCBIN	".date"
 		dc.b	0
 		dc.b	"$Id: encode.asm 1.2 2005/04/07 23:36:50 wepl Exp wepl $",0
 	EVEN
 
 ;##########################################################################
 
-	INCDIR	Sources:
+	INCDIR	sources
 	INCLUDE	dosio.i
 		PrintArgs
 	INCLUDE	error.i
@@ -243,7 +244,7 @@ _template	dc.b	"Input/A"		;file to encode
 
 	SECTION g,BSS
 
-_Globals	dsb	gl_SIZEOF
+_Globals	ds.b	gl_SIZEOF
 
 ;##########################################################################
 
