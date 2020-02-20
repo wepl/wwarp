@@ -11,6 +11,9 @@
 # enable a non-debug assemble:
 # 'setenv DEBUG=0' or 'make DEBUG=0'
 
+# getting dependencies (requires to uncomment vasm unsupported stuff)
+# vasm -depend=make xxx.asm
+
 # different commands for build under Amiga or Vamos
 ifdef AMIGA
 ASMOPT=-x+
@@ -37,9 +40,8 @@ else
 ASM=$(VAMOS) basm -v+ $(ASMOPT) -O+ -ODc- -ODd- -OG+ -wo-
 endif
 
-#
-#
-#
+all : $(DEST)WWarp $(DEST)encode $(DEST)mfm
+
 $(DEST)WWarp : wwarp.asm cmdc.s cmdd.s cmdw.s \
 	fmt_beast1.s fmt_beast2.s fmt_beyond.s fmt_bloodmoney.s \
 	fmt_elite.s fmt_goliath.s fmt_gremlin.s fmt_hitec.s \
@@ -54,6 +56,14 @@ $(DEST)WWarp : wwarp.asm cmdc.s cmdd.s cmdw.s \
 	$(VAMOS) wdate >.date
 	$(ASM) -o$@ $<
 
+$(DEST)encode : encode.asm macros/ntypes.i sources/dosio.i sources/strings.i sources/error.i sources/devices.i sources/files.i
+	$(VAMOS) wdate >.date
+	$(ASM) -o$@ $<
+
+$(DEST)mfm : mfm.asm macros/ntypes.i sources/dosio.i sources/strings.i sources/error.i sources/devices.i
+	$(VAMOS) wdate >.date
+	$(ASM) -o$@ $<
+
 clean :
-	$(RM) $(DEST)WWarp
+	$(RM) $(DEST)WWarp $(DEST)encode $(DEST)mfm
 
