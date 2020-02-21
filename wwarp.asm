@@ -1558,19 +1558,23 @@ _parsesync	movem.l	d2-d7/a2-a3,-(a7)
 ;##########################################################################
 ;##########################################################################
 
-_cmd_zap
-		move.l	(gl_rd_arg,GL),d0
+_cmd_zap	move.l	(gl_rd_arg,GL),d0
 		beq	.noarg
 		move.l	d0,a0
+		tst.b	(a0)			;must not be empty
+		beq	.badfmt
 		bsr	_etoi
-		tst.l	d0
-		ble	.badfmt
+		tst.b	(a0)			;must be fully converted
+		bne	.badfmt
 		cmp.l	#TT_CNT,d0
 		bhi	.badfmt
 		move.w	d0,(gl_trk+wth_type,GL)
 		bsr	_gettt
+		move.l	a0,d0
+		beq	.badfmt
 		move.l	a0,a2			;A2 = wwf
 
+	;only one track number must be specified
 		moveq	#0,d0
 		move.l	#MAXTRACKS-1,d1
 .c0		bftst	(gl_tabarg+wtt_tab,GL){d1:1}
@@ -1585,15 +1589,15 @@ _cmd_zap
 		bsr	_LoadFileMsg
 		move.l	d0,d3			;D3 = mem
 		beq	.rts
-		moveq	#0,d2
-		move.w	(wwf_speclen,a2),d2
-		add.w	(wwf_datalen,a2),d2
-		cmp.l	d1,d2
-		bne	.badlen
+		move.l	d1,d2			;D2 = length
+		cmp.l	#MAXTDLEN,d2
+		bhs	.badtdlen
 
 		move.l	d0,a0
 		lea	(gl_tmpbuf,GL),a1
+		addq.l	#3,d1
 		lsr.l	#2,d1
+		subq.l	#1,d1
 .copy		move.l	(a0)+,(a1)+
 		dbf	d1,.copy
 
@@ -1601,13 +1605,44 @@ _cmd_zap
 		move.l	(gl_execbase,GL),a6
 		jsr	(_LVOFreeVec,a6)
 
+		cmp.w	#TT_RAW,(gl_trk+wth_type,GL)
+		beq	.raw
+
+		moveq	#0,d0
+		move.w	(wwf_speclen,a2),d0
+		add.w	(wwf_datalen,a2),d0
+		cmp.l	d0,d2
+		bne	.badlen
+
 		bsr	_cmdw_init
 		tst.l	d0
 		beq	.rts
 		bsr	_cmdw_custom
-		bsr	_cmdw_finit
+		bra	_cmdw_finit
 
-.rts		rts
+.raw
+	;we assume the first 16 bytes is sync
+		lea	(gl_tmpbuf,GL),a0
+		lea	(gl_trk+wth_sync,GL),a1
+		lea	(SYNCLEN,a1),a2			;mask
+		moveq	#SYNCLEN,d0
+		cmp.l	d0,d2
+		bhi	.fullsync
+		move.l	d2,d0
+.fullsync	moveq	#-1,d1
+.copysync	move.b	(a0)+,(a1)+
+		move.b	d1,(a2)+
+		subq.w	#1,d0
+		bne	.copysync
+	;set lengths
+		lsl.l	#3,d2				;bytes -> bits
+		move.l	d2,(gl_trklen,GL)		;length in gl_tmpbuf
+		move.l	d2,(gl_trk+wth_len,GL)		;length of mfm data for this format
+		bsr	_cmdw_init
+		tst.l	d0
+		beq	.rts
+		bsr	_cmdw_raw
+		bra	_cmdw_finit
 
 .noarg		lea	.tnoarg,a0
 		bra	_Print
@@ -1615,21 +1650,31 @@ _cmd_zap
 		bra	_Print
 .badtrkcnt	lea	.tbadtrkcnt,a0
 		bra	_Print
-.badlen		lea	.tbadlen,a0
+.badtdlen	lea	.tbadtdlen,a0
+		move.l	#MAXTDLEN,-(a7)
+		move.l	(a7),-(a7)
 		move.l	d2,-(a7)
 		move.l	d2,-(a7)
-		move.l	d1,-(a7)
-		move.l	d1,-(a7)
 		move.l	a7,a1
 		bsr	_PrintArgs
 		add.w	#16,a7
 		move.l	d3,a1
 		move.l	(gl_execbase,GL),a6
 		jmp	(_LVOFreeVec,a6)
+.badlen		lea	.tbadlen,a0
+		move.l	d0,-(a7)
+		move.l	d0,-(a7)
+		move.l	d2,-(a7)
+		move.l	d2,-(a7)
+		move.l	a7,a1
+		bsr	_PrintArgs
+		add.w	#16,a7
+.rts		rts
 
 .tnoarg		dc.b	"custom format must be specified as number",10,0
-.tbadfmt	dc.b	"invalid custom format",10,0
+.tbadfmt	dc.b	"invalid custom format number",10,0
 .tbadtrkcnt	dc.b	"only one destination track must be specified",10,0
+.tbadtdlen	dc.b	"invalid file length, got $%lx=%ld, cannot be larger than $%lx=%ld",10,0
 .tbadlen	dc.b	"invalid file length, got $%lx=%ld, expected $%lx=%ld",10,0
 	EVEN
 
