@@ -1,0 +1,156 @@
+
+***  1.28 (06.05.2008)
+	- new:	supports 5.25" drives, 80 tracks, but not really tested (Mark)
+	- chg:	tracklist will be compressed now, old WWarps cannot read these
+		files if track 0 is not contained due a bug in old versions
+	- chg:	builtin help improved a lot, more/less feature
+	- chg:	new search routine for custom format detection which uses a
+		lookup table, around 7 times faster as in version 1.27
+
+***  1.27 (30.05.2007)
+	- new:	option NoFmt/K added to exclude a list of formats from known
+		formats detection
+	- chg:	MFM2WWarp removed from distribution
+
+***  1.26 (30.01.2006)
+	- new:	format from the game SlackSkinAndFlint added (Codetapper)
+
+***  1.25 (08.04.2005)
+	- new:	support for trackwarp.library added, enables direct import of
+		alien warp files
+	- new:	option Force/S added to make WWarp to detect track formats
+		with flag F during creating warp files using command C (e.g.
+		while read from floppy or import), this obsolets aftwards
+		usage of command F
+	- chg:	packmodes do not work on specdata anymore, so packing is
+		possible for tracks formats with special data
+
+***  1.24 (16.11.2004)
+	- new:	format rob northen copylock old, uses standard dos track
+		with extra sync and data, decoder only, no write back
+	- new:	MFM2WWarp supports also RNWarp and NOMADwarp
+
+***  1.23 (28.10.2004)
+	- fix:	limit support for hackdisk.device added, reading up to track
+		161 works, 162/163 gives wrong results, writing crashes my
+		machine, so I recommend to NOT use it (tested with 2.04)
+	- fix:	could crash when not using asyncio and errors on file io
+
+***  1.22 (04.10.2004)
+	- new:	formats twilight2/3 added (Awesome/Psygnosis)
+
+***  1.21 (06.07.2004)
+	- fix:	write of non custom formats works again
+	- fix:	SYBIL handling improved
+
+***  1.20 (18.06.2004)
+	- new:	MFM2WWarp supports CAPS/IPF images too (Psygore)
+		MFM2WWarp uses asyncio.library if available
+
+***  1.19 (28.04.2004)
+	- fix:	degug code removed which caused illegal instruction exception
+		on each custom format write back operation
+	- note:	write back of RNCopyLock is still not working
+
+***  1.18 (08.04.2004)
+	- new:	command G to save contents of wwarp file as a dos disk image
+	- new:	completed support for SYBIL hardware (calibration etc.)
+	- new:	formats thalamus, goliath, beyond, hitec, mason (Codetapper)
+	- new:	format Rob Northen Copylock, displays calculated ID's by
+		several routines, write back only using SYBIL
+	- chg:	MAXTRACKS increased to 168 which means upto cylinder 83 can
+		be processed
+	- chg:	simplified custom format interface
+	- new:	support for MULTISYNC formats
+	- new:	option DBG/K/N to set debug level, higher values causes wwarp
+		to output debugging messages on several operations (see
+		ReadMe.txt)
+	- chg:	various minor changes and improvements
+
+***  1.17 (02.12.2002)
+	- new:	SpecialFX format added (Codetapper)
+	- fix:	write back error introduced in 1.16
+
+***  1.16 (02.12.2002)
+	- chg:	again a bit faster scanning for custom formats
+	- new:	custom formats Ocean, Twilight, Vision and ZZKJ added
+		(Codetapper/Wepl)
+	- new:	support for SYBIL hardware added, currently support is very
+		limited, no speed adjustment, it will be improved later...
+		many thanks to Galahad for the hardware :)
+	- new:	command Z to write a data file as custom format to disk
+
+***  1.15 (02.11.2002)
+	- new:	program MFM2WWarp supports also old WWarp 1.3 file format
+	- fix:	command Save did write wrong data on packed (LEQ/SLINC) tracks
+		(Codetapper)
+	- new:	pack mode SLEQ (sectors long equal)
+	- new:	help screen lists also infos about all supported custom
+		formats
+	- chg:	faster scanning for custom formats
+
+***  1.14 (28.08.2002)
+	- chg:	program MFM2WWarp converts also files created by 'mfmwarp
+		(Ferox), done by Psygore
+	no changes on WWarp, only revision bumped
+
+***  1.13 (09.05.2002)
+	- new:	detected custom formats 'Turrican1/2/3', 'BloodMoney' and
+		'Psygnosis1' added by Psygore
+	- new:	program ADF2WWarp to convert UAE-MFM-ADF's to WWarp files
+		by Psygore
+	- fix:	command F(orce) clears the sync now
+
+***  1.12 (15.12.2001)
+	- new:	command I(nfo) prints all sync offsets
+	- new:	detected custom formats 'PrimeMover', 'Beast1' and 'Beast2'
+		added by Psygore
+
+***  1.11 (06.11.2001)
+	- fix:	bug in post gap calculation on raw write fixed (could possible
+		create wrong extra syncs)
+	- new:	command P(ack) implemented
+	- new:	DOS drive inhibit added on write operation
+
+***  1.10 (28.10.2001)
+	- fix:	verify does also work with raw tracks which contain multiple
+		sync's, it prints a message and will try all syncs for verify
+	- new:	on multiple syncs the number of the sync to use can be
+		specified on command Y and will saved in the wwarp file too
+		and will be used on all other commands afterwards
+	- chg:	the routine to decode standard dos tracks has been recoded to
+		be more tolerant for format errors and variations, should at
+		least detect all which is read by AmigaDOS
+
+***  1.9 (20.09.2001)
+	- new:	uses asyncio.library if available to speed up file operations
+		(modifying an existing wwarp file is around 100% faster)
+	- fix:	indexsync on read works now, all raw tracks will be written
+		after index pulse now
+	- new:	support for high density disk+drive added
+	- new:	support for cylinder 80/81 added
+	- chg:	misc other minor changes
+
+***  1.8 (24.07.2001)
+	- new:	Rob Northen 12 sector format directly supported
+	- chg:	before reading trackdisk buffers will be flushed/cleared
+
+***  1.7 (31.03.2001)
+	- chg:	command dump understands bit offsets now, e.g. use
+		'wwarp test d 1 4489,2,-0.1' to see the track 1 shiftet to
+		the first bit before the second sync 4489
+	- new:	command save implemented
+	- new:	writing of raw data implemented, sync must be set for this
+	- new:	verify on writes added, it's default on and can disabled via
+		option NoVerify/S
+
+***  1.6 (06.08.2000)
+	- new:	read retries are printed as a '.' after track number
+	- fix:	display bug on missing tracks in file fixed
+	- fix:	inter sector gap check on standard dos format detection
+		improved a bit
+	- chg:	command Force now skips all tracks which cannot be decoded
+		instead of canceling the operation
+
+***  1.5 (29.06.2000)
+	- chg:	various changes ;-)
