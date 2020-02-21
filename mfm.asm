@@ -2,7 +2,6 @@
 ;  :Program.	mfm.asm
 ;  :Contents.	decodes mfm data
 ;  :Author.	Bert Jahn
-;  :EMail.	wepl@whdload.de
 ;  :Version	$Id: mfm.asm 1.4 2005/04/07 23:37:04 wepl Exp wepl $
 ;  :History.	27.02.00 initial
 ;		23.03.05 assembler options adjusted
@@ -68,7 +67,6 @@ Revision	= 1
 _txt_creator	sprintx	"mfm %ld.%ld ",Version,Revision
 		INCBIN	".date"
 		dc.b	0
-		dc.b	"$Id: mfm.asm 1.4 2005/04/07 23:37:04 wepl Exp wepl $",0
 	EVEN
 
 ;##########################################################################

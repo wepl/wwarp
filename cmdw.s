@@ -2,7 +2,6 @@
 ;  :Program.	cmdw.s
 ;  :Contents.	command w - write
 ;  :Author.	Bert Jahn
-;  :EMail.	wepl@whdload.de
 ;  :Version	$Id: cmdw.s 1.27 2008/04/23 21:32:09 wepl Exp wepl $
 ;  :History.	18.03.01 separated from wwarp.asm
 ;		20.10.01 verify supports multiple syncs now
@@ -24,9 +23,6 @@
 ;  :Translator.	Barfly V2.9
 ;  :To Do.
 ;---------------------------------------------------------------------------*
-
-		dc.b	"$Id: cmdw.s 1.27 2008/04/23 21:32:09 wepl Exp wepl $",0
-	EVEN
 
 _cmd_write	bsr	_cmdw_init
 		tst.l	d0

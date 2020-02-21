@@ -2,7 +2,6 @@
 ;  :Module.	wwarp.i
 ;  :Contens.	include file for the WWarp file format
 ;  :Author.	Bert Jahn
-;  :EMail.	wepl@whdload.de
 ;  :Version.	$Id: wwarp.i 1.12 2006/01/30 21:21:00 wepl Exp wepl $
 ;  :History.	23.04.02 separated from WWarp.asm
 ;		01.11.02 TF_SLEQ added
@@ -51,7 +50,7 @@ TABLEVER	= 1
 		UWORD	wtt_ver			;structure format version
 		UWORD	wtt_first		;first track in list
 		UWORD	wtt_last		;last track in list
-		LABEL	wtt_tab			;track table, one bit for each track,
+		LABEL	wtt_tab			;track table, bitfied, one bit for each track,
 						;length depends on wtt_first and wtt_last!
 ;=============================================================================
 ;	Track Header
@@ -71,10 +70,10 @@ SYNCLEN		= 16
 		ULONG	wth_wlen		;lengtn of data to write back in bytes!
 		STRUCT	wth_sync,SYNCLEN	;sync
 		STRUCT	wth_mask,SYNCLEN	;sync mask (used bits in wth_sync)
-		LABEL	wth_data_v1		;track data for wth_ver == 1
+		LABEL	wth_data_v1		;track data start for wth_ver == 1
 	;the following is new for version 2
 		UWORD	wth_syncnum		;number of sync to use for write back
-		LABEL	wth_data		;track data
+		LABEL	wth_data		;track data start
 
 ;track types
 
@@ -120,10 +119,10 @@ TT_CNT = EOFFSET-1	;number of supported custom formats
 
  BITDEF TF,INDEX,0	;track data starts with index signal (only TT_RAW)
  BITDEF TF,BZIP2,1	;compressed wih bzip2 (unused currently and probably for ever)
- BITDEF TF,RAWSINGLE,2	;raw mfm data is saved in exact bit length
+ BITDEF TF,RAWSINGLE,2	;raw mfm data is stored in exact bit length
  BITDEF TF,LEQ,3	;all longs of the trackdata are equal, stored is only one long
- BITDEF TF,SLINC,4	;each sector (512 byte) contains longs which will
-			;incremented, stored are the first long for each sector
+ BITDEF TF,SLINC,4	;each sector (512 byte) contains a sequence of incremented
+ 			;longs, stored is the first long for each sector
  BITDEF TF,SLEQ,5	;each sector (512 byte) contains equal longs,
 			;stored is one long for each sector
 

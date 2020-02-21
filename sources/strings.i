@@ -51,11 +51,6 @@ STRINGS_I = 1
 *##	_StrNCaseCmp	string(a0),string(a1),len(d0) --> relation(d0)
 *##	_VSNPrintF	buffer(a0),fmt(a1),argarray(a2),bufsize(d0) --> numchars(d0),bufferleft(a0)
 
-	IFND NOIDSTRING
-	dc.b	"$Id: strings.i 1.5 2014/02/01 01:38:19 wepl Exp wepl $"
-	EVEN
-	ENDC
-
 ;----------------------------------------
 ; Formatiert String (printf)
 ; Übergabe :	D0 = ULONG Länge des Buffers

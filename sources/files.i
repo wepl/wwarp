@@ -46,10 +46,9 @@ FILES_I=1
 *##	_AppendOnFile	buflen(d0) buffer(a0) filename(a1) -> success
 *##	_CheckFileExist	filename(a0) -> bool
 
-	dc.b	"$Id: files.i 1.6 2010/04/01 01:04:00 wepl Exp wepl $"
-	EVEN
-
+		IFND	EXEC_MEMORY_I
 			INCLUDE	exec/memory.i
+		ENDC
 		IFND	ERROR_I
 			INCLUDE	error.i
 		ENDC

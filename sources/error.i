@@ -27,9 +27,6 @@ ERROR_I=1
 *##	_PrintErrorDOSName	operation(a0) name(a1)
 *##	_PrintErrorTD		error(d0.b) operation(a0)
 
-	dc.b	"$Id: error.i 1.6 2008/05/06 22:02:44 wepl Exp wepl $"
-	EVEN
-
 		IFND	DOSIO_I
 			INCLUDE	dosio.i
 		ENDC

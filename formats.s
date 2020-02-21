@@ -2,8 +2,6 @@
 ;  :Program.	formats.s
 ;  :Contents.	informations and routines regarding special formats
 ;  :Author.	Bert Jahn
-;  :EMail.	wepl@whdload.org
-;  :Address.	Feodorstrasse 8, Zwickau, 08058, Germany
 ;  :Version	$Id: formats.s 1.26 2006/01/30 21:21:43 wepl Exp wepl $
 ;  :History.	18.03.01 created
 ;		23.07.01 rob format added
@@ -24,9 +22,6 @@
 ;  :Translator.	Barfly V2.9
 ;  :To Do.
 ;---------------------------------------------------------------------------*
-
-		dc.b	"$Id: formats.s 1.26 2006/01/30 21:21:43 wepl Exp wepl $",0
-	EVEN
 
 		INCLUDE	fmt_std.s
 		INCLUDE	fmt_gremlin.s

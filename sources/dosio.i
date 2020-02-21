@@ -40,11 +40,6 @@ DOSIO_I=1
 *##	_PrintLn	outputs a linefeed
 *##	_PrintMore	outputs a string(a0) with more/less pipe
 
-	IFND NOIDSTRING
-	dc.b	"$Id: dosio.i 1.9 2014/01/29 00:04:15 wepl Exp wepl $",10,0
-	EVEN
-	ENDC
-
 		IFND	STRINGS_I
 			INCLUDE	strings.i
 		ENDC

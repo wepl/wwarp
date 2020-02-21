@@ -2,8 +2,6 @@
 ;  :Program.	WWarp.asm
 ;  :Contents.	Disk-Warper
 ;  :Author.	Bert Jahn
-;  :EMail.	wepl@whdload.de
-;  :Address.	Clara-Zetkin-Strasse 52, Zwickau, 08058, Germany
 ;  :Version	$Id: wwarp.asm 1.69 2008/05/06 21:39:36 wepl Exp wepl $
 ;  :History.	29.08.98 started
 ;		20.09.98 reading of std tracks added, and major rework
@@ -251,7 +249,6 @@ _txt_creator	sprintx	"WWarp %ld.%ld [build ",Version,Revision
 		dc.b	"] "
 		INCBIN	".date"
 		dc.b	0
-		dc.b	"$Id: wwarp.asm 1.69 2008/05/06 21:39:36 wepl Exp wepl $",0
 	EVEN
 
 ;##########################################################################
@@ -2790,7 +2787,7 @@ _txt_help	dc.b	155,"1m"
 		dc.b	"	    args = length",10
 	;	dc.b	"	M - merge two wwarp files together",10
 	;	dc.b	"	    args = wwarp-to-add",10
-		dc.b	"	P - pack wwarp file, remove unused data",10
+		dc.b	"	P - pack wwarp file, remove unnecessary data",10
 		dc.b	"	R - remove tracks from a wwarp file",10
 		dc.b	"	S - save tracks (mfm/custom format)",10
 		dc.b	"	W - write wwarp file back to disk",10
@@ -2960,13 +2957,13 @@ _template	dc.b	"Filename/A"		;file to create/read
 
 	SECTION c,BSS,CHIP
 
-_chipbuf	dsb	MAXTDLEN
+_chipbuf	ds.b	MAXTDLEN
 
 ;##########################################################################
 
 	SECTION g,BSS
 
-_Globals	dsb	gl_SIZEOF
+_Globals	ds.b	gl_SIZEOF
 
 ;##########################################################################
 

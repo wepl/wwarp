@@ -2,7 +2,6 @@
 ;  :Program.	encode.asm
 ;  :Contents.	encodes data to mfm
 ;  :Author.	Bert Jahn
-;  :EMail.	wepl@whdload.de
 ;  :Version	$Id: encode.asm 1.2 2005/04/07 23:36:50 wepl Exp wepl $
 ;  :History.	06.02.02 initial
 ;		20.02.20 adapted for vamos build
@@ -64,7 +63,6 @@ Revision	= 0
 _txt_creator	sprintx	"encode %ld.%ld ",Version,Revision
 		INCBIN	".date"
 		dc.b	0
-		dc.b	"$Id: encode.asm 1.2 2005/04/07 23:36:50 wepl Exp wepl $",0
 	EVEN
 
 ;##########################################################################

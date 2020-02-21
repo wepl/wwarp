@@ -2,7 +2,6 @@
 ;  :Program.	cmdd.s
 ;  :Contents.	command d - dump
 ;  :Author.	Bert Jahn
-;  :EMail.	wepl@whdload.de
 ;  :Version	$Id: cmdd.s 1.6 2008/05/06 21:54:18 wepl Exp wepl $
 ;  :History.	02.11.02 separated from wwarp.asm
 ;		14.02.20 fix printing of long syncs
@@ -12,9 +11,6 @@
 ;  :Translator.	Barfly V2.9
 ;  :To Do.
 ;---------------------------------------------------------------------------*
-
-		dc.b	"$Id: cmdd.s 1.6 2008/05/06 21:54:18 wepl Exp wepl $",0
-	EVEN
 
 _cmd_dump	moveq	#0,d4			;D4 = sync specified
 		moveq	#1,d5			;D5 = sync num

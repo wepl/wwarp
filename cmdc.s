@@ -2,7 +2,6 @@
 ;  :Program.	cmdc.s
 ;  :Contents.	command c - create
 ;  :Author.	Bert Jahn
-;  :EMail.	wepl@whdload.de
 ;  :Version	$Id: cmdc.s 1.21 2008/05/06 21:54:18 wepl Exp wepl $
 ;  :History.	12.06.00 separated from wwarp.asm
 ;		28.06.00 adapted for _cmdwork
@@ -23,9 +22,6 @@
 ;  :Translator.	Barfly V2.9
 ;  :To Do.
 ;---------------------------------------------------------------------------*
-
-		dc.b	"$Id: cmdc.s 1.21 2008/05/06 21:54:18 wepl Exp wepl $",0
-	EVEN
 
 _cmd_create
 		move.l	(gl_rd_import,GL),d0

@@ -21,11 +21,6 @@ DEVICES_I = 1
 *##	_deviceerrors		device error strings
 *##	_trackdiskerrors	trackdisk.device error strings
 
-	IFND NOIDSTRING
-	dc.b	"$Id: devices.i 1.3 2014/01/29 00:04:40 wepl Exp wepl $"
-	EVEN
-	ENDC
-
 		IFND	DOS_DOSEXTENS_I
 			INCLUDE	dos/dosextens.i
 		ENDC
