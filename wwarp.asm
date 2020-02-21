@@ -1232,9 +1232,9 @@ _cmd_remove
 ;##########################################################################
 
 _cmd_save	move.l	#CMDF_IN|CMDF_TRKDATA,d0	;flags
-		sub.l	a0,a0			;cbdata
-		lea	.tracktable,a1		;cbtt
-		lea	.tracks,a2		;cbt
+		sub.l	a0,a0				;cbdata
+		lea	.tracktable,a1			;cbtt
+		lea	.tracks,a2			;cbt
 		bra	_cmdwork
 
 .tracktable	lea	(gl_tabarg,GL),a0
@@ -1243,10 +1243,10 @@ _cmd_save	move.l	#CMDF_IN|CMDF_TRKDATA,d0	;flags
 		moveq	#-1,d0
 		rts
 
-.tracks
-		bsr	_gettt
-		move.l	a0,a3			;A3 = wwf
+.tracks		bsr	_gettt
+		move.l	a0,a3				;A3 = wwf
 
+	;build filename
 		lea	(.name),a0
 		move.l	(wwf_name,a3),-(a7)
 		move.w	(gl_trk+wth_num,GL),-(a7)
@@ -1256,17 +1256,76 @@ _cmd_save	move.l	#CMDF_IN|CMDF_TRKDATA,d0	;flags
 		sub.l	d0,a7
 		move.l	a7,a2
 		bsr	_FormatString
-
+	;set file length
 		move.l	(gl_trklen,GL),d0
-		addq.l	#7,d0
+		addq.l	#7,d0				;round up to byte
 		lsr.l	#3,d0
 
+	;for TT_RAW tracks shift the track data if sync is set
+		cmp.w	#TT_RAW,(wwf_type,a3)
+		bne	.save
+		lea	(gl_trk+wth_sync,GL),a0
+		bsr	_getsynclen
+		tst.l	d0
+		beq	.save
+	;search sync
+		bsr	_getsyncsearchlen
+		move.l	d0,d1				;bitlength of buffer to search
+		moveq	#0,d0
+		move.w	(gl_trk+wth_syncnum,GL),d0	;syncno
+		lea	(gl_tmpbuf,GL),a0		;buffer
+		lea	(gl_trk+wth_sync,GL),a1		;sync
+		bsr	_countsync
+		tst.l	d1
+		beq	.nosync
+		move.l	d0,d6				;D6 = bit offset of sync found
+		bmi	.lesssync
+		tst.w	(gl_trk+wth_syncnum,GL)
+		bne	.onesync
+		cmp.w	#1,d1
+		beq	.onesync
+		lea	(_moresync),a0
+		move.l	d1,-(a7)
+		move.l	a7,a1
+		bsr	_PrintArgs
+		addq.l	#4,a7
+		bsr	_FlushOutput
+.onesync
+	;determine length to save
+		move.l	(gl_trk+wth_wlen,GL),d7
+		lsl.l	#3,d7				;d7 = data write length in bits
+		beq	.nowlen
+		move.l	(gl_trklen,GL),d2
+		sub.l	d6,d2
+		cmp.l	d7,d2
+		blo	.lesstrkdata
+		bra	.wlenok
+.nowlen		move.l	(gl_trklen,GL),d7
+		sub.l	d6,d7
+.wlenok
+	;shift data
+		move.l	d6,d0
+		move.l	d7,d1
+		lea	(gl_tmpbuf,GL),a0
+		bsr	_shiftmfm
+	;set file length
+		move.l	d7,d0
+		addq.l	#7,d0
+		lsr.l	#3,d0
+.save
 		lea	(gl_tmpbuf,GL),a0
 		move.l	a7,a1
 		bsr	_SaveFileMsg
 
 .end		add.w	#38,a7
 		rts
+
+.nosync		bsr	_cmdw_nosync
+		bra	.end
+.lesssync	bsr	_cmdw_lesssync
+		bra	.end
+.lesstrkdata	bsr	_cmdw_lesstrkdata
+		bra	.end
 
 .name		dc.b	"track.%03ld.%s",0
 	EVEN
