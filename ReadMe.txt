@@ -77,8 +77,6 @@ commands:
 	    in the wwarp file, this command doesn't work with tracks which are
 	    not of type 'raw' of course
 	
-	M - merge two wwarp files together (not implemented yet)
-	
 	P - pack wwarp file
 	    this removes all unneccessary data from the wwarp file, all tracks
 	    of type 'raw' and a valid 'Length' and 'Sync' will be stored
@@ -92,7 +90,9 @@ commands:
 	S - save tracks
 	    each track will be saved to a separate file, the filename contains
 	    the track number and the format, if the format is raw-single the
-	    doubled length will be saved
+	    doubled length will be saved, if the format is raw and a sync is
+	    set the data will be shifted to this sync, if length is also set only
+	    length data bytes are saved
 	
 	W - write wwarp file to disk
 
@@ -108,12 +108,15 @@ commands:
 	    	syncno - if multiple syncs are found, the number of the sync
 	    		to use (first sync is 1)
 
-	Z - write custom format by data file
-	    this command does not operate on a wwarp file!
-	    the filename specifies the datafile which will be written to the
-	    specified track (only one track must be set) in custom format
-	    which has been specifed as number, the file length must match the
-	    tracklength for the given format
+	Z - write custom format or raw data from a data file to the disk
+	    This command does not operate on a wwarp file!
+	    The filename specifies the datafile which will be written to the
+	    specified track (only one track must be set). The format to be
+	    written must be specifed as number. The file length must match the
+	    tracklength for the given format. The supported formats and their
+	    number are displayed when wwarp is called without arguments.
+	    To write raw-mfm data the format number 0 must be used. Then the
+	    first 16 bytes are considered the sync and will be used for verify.
 	    e.g. wwarp mynewtrack.47 z 47 17 (writes ZZKJA format)
 
 tracks:
@@ -267,4 +270,7 @@ the value specified:
 	head will be moved, now instead the dot the cylinder will be printed
 
 MORE QUESTIONS? so check the source ;-)
+
+The source is accessible via: https://github.com/wepl/wwarp
+Please report bugs via the GitHub page. Contributions are welcome too!
 
