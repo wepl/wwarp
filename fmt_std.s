@@ -82,7 +82,7 @@ _decode_std	link	LOC,#lc1_SIZEOF
 		or.w	d7,d0
 		cmp.w	d0,d1
 		bne	.no
-	;check sector label
+	;check sector labels, all must be cleared
 		moveq	#7,d7
 .lblchk		bfextu	(12,a0,d7.l*4){d2:32},d0
 		and.l	d4,d0
@@ -150,7 +150,7 @@ _decode_std	link	LOC,#lc1_SIZEOF
 		cmp.b	d7,d0
 		bne	.no
 
-		lsr.l	#8,d0			;sector number 0..10
+		lsr.l	#8,d0			;D0.b = sector number 0..10
 		cmp.b	#10,d0
 		bhi	.no
 		bclr	d0,d4
@@ -158,12 +158,13 @@ _decode_std	link	LOC,#lc1_SIZEOF
 		moveq	#0,d1
 		move.b	d0,d1
 		mulu	#$200,d1
-		lea	(a3,d1.l),a1
+		lea	(a3,d1.l),a1		;A1 = decode destination
 
-		lsr.l	#8,d0			;track number
+		lsr.l	#8,d0			;D0.w = format + track number
 		cmp.w	(lc1_trknum,LOC),d0
 		bne	.no
 
+	;the sector labels, 4 longs decoded
 		moveq	#3,d2
 .label		bfextu	(a0){d6:32},d0
 		bfextu	(16,a0){d6:32},d1
@@ -186,6 +187,7 @@ _decode_std	link	LOC,#lc1_SIZEOF
 		bsr	_getlwd			;data chksum
 		move.l	d0,d3
 
+	;the sector data
 		moveq	#$200/4-1,d2
 .data		bfextu	(a0){d6:32},d0
 		bfextu	($200,a0){d6:32},d1
