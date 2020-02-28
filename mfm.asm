@@ -6,8 +6,9 @@
 ;  :History.	27.02.00 initial
 ;		23.03.05 assembler options adjusted
 ;		20.02.20 adapted for vamos build
+;		26.02.20 support also encoding a long
 ;  :Requires.	OS V37+
-;  :Copyright.	© 2000-2005 Bert Jahn, All Rights Reserved
+;  :Copyright.	© 2000-2005,2020 Bert Jahn, All Rights Reserved
 ;  :Language.	68000 Assembler
 ;  :Translator.	Barfly V2.9
 ;  :To Do.
@@ -31,9 +32,9 @@
 		LABEL	gl_rdarray
 		ULONG	gl_rd_odd
 		ULONG	gl_rd_even
+		ULONG	gl_rd_decoded
 		ULONG	gl_rc			;programs return code
-		ALIGNLONG
-		STRUCT	gl_tmp,10
+		STRUCT	gl_tmp,16
 		LABEL	gl_SIZEOF
 
 ;##########################################################################
@@ -139,6 +140,10 @@ _Start		lea	(_Globals),GL
 		move.l	(gl_rd_even,GL),a0
 		bsr	_parse
 		move.l	d0,d6			;d6 = even
+		move.l	(gl_rd_decoded,GL),a0
+		bsr	_parse
+		move.l	d0,d7			;d7 = decoded
+		bne	.encode
 
 		move.l	#$55555555,d0
 		move.l	d5,d1
@@ -154,7 +159,40 @@ _Start		lea	(_Globals),GL
 		move.l	a7,a1
 		bsr	_PrintArgs
 		add.w	#12,a7
+		bra	.end
 
+.encode		move.l	#$55555555,d4
+		move.l	d7,-(a7)
+		move.l	d7,d3
+
+		and.l	d4,d3
+		move.l	d3,d0
+		eor.l	d4,d0
+		move.l	d0,d1
+		add.l	d0,d0
+		lsr.l	#1,d1
+		bset	#31,d1
+		and.l	d0,d1
+		or.l	d1,d3
+		move.l	d3,-(a7)
+
+		lsr.l	#1,d7
+		and.l	d4,d7
+		move.l	d7,d0
+		eor.l	d4,d0
+		move.l	d0,d1
+		add.l	d0,d0
+		lsr.l	#1,d1
+		bset	#31,d1
+		and.l	d0,d1
+		or.l	d1,d7
+		move.l	d7,-(a7)
+
+		lea	(_out),a0
+		move.l	a7,a1
+		bsr	_PrintArgs
+		add.w	#12,a7
+.end
 		move.l	(gl_rdargs,GL),d1
 		move.l	(gl_dosbase,GL),a6
 		jsr	(_LVOFreeArgs,a6)
@@ -166,15 +204,18 @@ _Start		lea	(_Globals),GL
 		move.l	(gl_rc,GL),d7
 _rts		rts
 
-_parse		lea	(gl_tmp,GL),a1
-		move.b	#"$",d0
+	;prepend $ if not present
+_parse		move.l	a0,d0
+		beq	_rts
+		lea	(gl_tmp,GL),a1
+		moveq	#"$",d0
 		cmp.b	(a0),d0
 		bne	.1
 		addq.l	#1,a0
 .1		move.b	d0,(a1)+
-		moveq	#7,d0
+		moveq	#8,d0
 .2		move.b	(a0)+,(a1)+
-		dbf	d0,.2
+		dbeq	d0,.2
 		clr.b	(a1)
 		lea	(gl_tmp,GL),a0
 		bra	_atoi
@@ -191,8 +232,9 @@ _readargs	dc.b	"read arguments",0
 ;subsystems
 _dosname	DOSNAME
 
-_template	dc.b	"Odd/A"			;odd bits
-		dc.b	",Even/A"		;even bits
+_template	dc.b	"O=Odd/K"		;odd bits
+		dc.b	",E=Even/K"		;even bits
+		dc.b	",D=Decoded/K"		;decoded data
 		dc.b	0
 
 ;##########################################################################
