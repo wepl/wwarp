@@ -224,7 +224,7 @@ GL	EQUR	A4		;a4 ptr to Globals
 LOC	EQUR	A5		;a5 for local vars
 CPU	=	68020
 
-	IFD _BARFLY_
+	IFD BARFLY
 	BOPT	O+		;enable optimizing
 	BOPT	ODd-		;disable mul optimizing
 	BOPT	ODe-		;disable mul optimizing
@@ -236,6 +236,10 @@ CPU	=	68020
 	DOSCMD	"WDate >.date"
 .passchk
 	ENDC
+	ELSE
+sprintx	MACRO
+	dc.b	\1
+	ENDM
 	ENDC
 
 Version		= 1

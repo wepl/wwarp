@@ -43,22 +43,25 @@ GL	EQUR	A4		;a4 ptr to Globals
 LOC	EQUR	A5		;a5 for local vars
 CPU	=	68000
 
+	IFD BARFLY
 	OUTPUT	C:mfm
-	IFD _BARFLY_
 	BOPT	O+		;enable optimizing
 	BOPT	OG+		;enable optimizing
 	BOPT	ODd-		;disable mul optimizing
 	BOPT	ODe-		;disable mul optimizing
 	BOPT	wo-		;no optimize warnings
-
 	IFND	.passchk
 	DOSCMD	"WDate >.date"
 .passchk
 	ENDC
+	ELSE
+sprintx	MACRO
+		dc.b	\1
+	ENDM
 	ENDC
 
 Version		= 0
-Revision	= 1
+Revision	= 2
 
 	SECTION a,CODE
 

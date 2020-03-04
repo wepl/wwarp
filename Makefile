@@ -11,9 +11,6 @@
 # enable a non-debug assemble:
 # 'setenv DEBUG=0' or 'make DEBUG=0'
 
-# getting dependencies (requires to uncomment vasm unsupported stuff)
-# vasm -depend=make xxx.asm
-
 # different commands for build under Amiga or Vamos
 ifdef AMIGA
 ASMOPT=-x+
@@ -27,6 +24,8 @@ DEST=../sys/c/
 RM=rm
 VAMOS=vamos -qC68020 -m4096 -s128 --
 endif
+
+DEPEND=vasm -depend=make -quiet
 
 ifndef DEBUG
 DEBUG=1
@@ -56,14 +55,21 @@ $(DEST)WWarp : wwarp.asm cmdc.s cmdd.s cmdw.s \
 	$(VAMOS) wdate >.date
 	$(ASM) -o$@ $<
 
+encode : $(DEST)encode
 $(DEST)encode : encode.asm macros/ntypes.i sources/dosio.i sources/strings.i sources/error.i sources/devices.i sources/files.i
 	$(VAMOS) wdate >.date
 	$(ASM) -o$@ $<
 
+mfm : $(DEST)mfm
 $(DEST)mfm : mfm.asm macros/ntypes.i sources/dosio.i sources/strings.i sources/error.i sources/devices.i
 	$(VAMOS) wdate >.date
 	$(ASM) -o$@ $<
 
 clean :
 	$(RM) $(DEST)WWarp $(DEST)encode $(DEST)mfm
+
+depend :
+	$(DEPEND) wwarp.asm
+	$(DEPEND) encode.asm
+	$(DEPEND) mfm.asm
 
