@@ -33,15 +33,17 @@ endif
 
 ifeq ($(DEBUG),1)
 # debug options
-ASM=$(VAMOS) basm -v+ $(ASMOPT) -O+ -ODc- -ODd- -wo- -sa+ -dDEBUG=1
+ASMOPTDBG=-sa+ -dDEBUG=1
 else
 # normal options
-ASM=$(VAMOS) basm -v+ $(ASMOPT) -O+ -ODc- -ODd- -OG+ -wo-
+ASMOPTDBG=-OG+
 endif
 
-all : $(DEST)WWarp $(DEST)encode $(DEST)mfm
+ASM=$(VAMOS) basm -v+ -O+ -ODc- -ODd- -wo- -iinclude $(ASMOPT) $(ASMOPTDBG)
 
-$(DEST)WWarp : wwarp.asm cmdc.s cmdd.s cmdw.s \
+all : WWarp encode mfm
+
+WWarp : wwarp.asm cmdc.s cmdd.s cmdw.s \
 	fmt_beast1.s fmt_beast2.s fmt_beyond.s fmt_bloodmoney.s \
 	fmt_elite.s fmt_goliath.s fmt_gremlin.s fmt_hitec.s \
 	fmt_mason.s fmt_ocean.s fmt_primemover.s fmt_psygnosis1.s \
@@ -54,22 +56,22 @@ $(DEST)WWarp : wwarp.asm cmdc.s cmdd.s cmdw.s \
 	sources/devices.i sources/dosio.i sources/error.i sources/files.i sources/strings.i
 	$(VAMOS) wdate >.date
 	$(ASM) -o$@ $<
+	$(CP) $@ $(DEST)
 
-encode : $(DEST)encode
-$(DEST)encode : encode.asm macros/ntypes.i sources/dosio.i sources/strings.i sources/error.i sources/devices.i sources/files.i
+encode : encode.asm macros/ntypes.i sources/dosio.i sources/strings.i sources/error.i sources/devices.i sources/files.i
 	$(VAMOS) wdate >.date
 	$(ASM) -o$@ $<
+	$(CP) $@ $(DEST)
 
-mfm : $(DEST)mfm
-$(DEST)mfm : mfm.asm macros/ntypes.i sources/dosio.i sources/strings.i sources/error.i sources/devices.i
+mfm : mfm.asm macros/ntypes.i sources/dosio.i sources/strings.i sources/error.i sources/devices.i
 	$(VAMOS) wdate >.date
 	$(ASM) -o$@ $<
+	$(CP) $@ $(DEST)
 
 clean :
-	$(RM) $(DEST)WWarp $(DEST)encode $(DEST)mfm
+	$(RM) WWarp encode mfm
 
 depend :
 	$(DEPEND) wwarp.asm
 	$(DEPEND) encode.asm
 	$(DEPEND) mfm.asm
-

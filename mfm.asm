@@ -44,7 +44,6 @@ LOC	EQUR	A5		;a5 for local vars
 CPU	=	68000
 
 	IFD BARFLY
-	OUTPUT	C:mfm
 	BOPT	O+		;enable optimizing
 	BOPT	OG+		;enable optimizing
 	BOPT	ODd-		;disable mul optimizing
