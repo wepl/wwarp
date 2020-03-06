@@ -105,11 +105,11 @@ _decode_std	link	LOC,#lc1_SIZEOF
 
 	;d2 = last sector before gap
 	;d0 = first sector after gap
-		move.l	d0,d6			;D6 = first sector
+		move.l	d0,d6			;D6 = first sector after gap
 
-	;check that inter sector gap is set to zeros
+	;check that inter sector gap is set to all zeros
 		move.l	a2,a0
-		sub.l	d2,d0
+		sub.l	d2,d0			;sub start of last sector before gap
 		sub.l	#($440-4)*8+33,d0	;length of gap in bits to check
 		bmi	.no
 		move.l	#$aaaaaaaa,d3

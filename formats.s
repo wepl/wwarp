@@ -59,8 +59,7 @@ _format_raw	dc.l	_formats	;succ
 		dc.w	TT_RAW		;type
 		dc.w	0		;flags
 
-_formats
-.std		dc.l	.stdf		;succ
+_formats	dc.l	.stdf		;succ
 		dc.l	_decode_std	;decode
 		dc.l	0		;encode
 		dc.l	0		;info
