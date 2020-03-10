@@ -271,6 +271,7 @@ the value specified:
 
 MORE QUESTIONS? so check the source ;-)
 
+Full package of WWarp can obtained from http://whdload.de/whdload/
 The source is accessible via: https://github.com/wepl/wwarp
 Please report bugs via the GitHub page. Contributions are welcome too!
 
