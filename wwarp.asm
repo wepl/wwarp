@@ -2971,8 +2971,8 @@ _forcebadtype	dc.b	"skipping track %d, no raw mfm-data!",10,0
 _forcebad	dc.b	"skipping track %d, could not decode",10,0
 _needsync	dc.b	"sync must be specified",10,0
 _badsync	dc.b	"invalid sync",10,0
-_sync_not	dc.b	"error track %ld, sync not found!",10,0
-_sync_less	dc.b	"error track %ld, too less syncs found!",10,0
+_sync_not	dc.b	"error track %d, sync not found!",10,0
+_sync_less	dc.b	"error track %d, too less syncs found!",10,0
 _dump1		dc.b	"track=%ld type=%s flags=%c%c len=$%4lx.%ld wlen=$%04lx sync=",0
 _badarg		dc.b	"Invalid [arg]",10,0
 _offerr		dc.b	"error, offset invalid",10,0
