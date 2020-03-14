@@ -2,7 +2,7 @@
 ;  :Program.	WWarp.asm
 ;  :Contents.	io via dos or asyncio.libaray
 ;  :Author.	Bert Jahn
-;  :Version	$Id: io.s 1.6 2008/05/06 21:54:18 wepl Exp wepl $
+;  :Version	$Id: io.s 1.7 2020/03/14 14:10:59 wepl Exp wepl $
 ;  :History.	18.06.04 separated from wwarm.asm to be used in mfmwarp
 ;		28.10.04 error handling fixed (doslib mode)
 ;		07.11.04 ASyncIO: Read() and Write() results changed

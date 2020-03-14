@@ -2,7 +2,7 @@
 ;  :Program.	WWarp.asm
 ;  :Contents.	Disk-Warper
 ;  :Author.	Bert Jahn
-;  :Version	$Id: wwarp.asm 1.69 2008/05/06 21:39:36 wepl Exp wepl $
+;  :Version	$Id: wwarp.asm 1.70 2020/03/14 14:09:48 wepl Exp wepl $
 ;  :History.	29.08.98 started
 ;		20.09.98 reading of std tracks added, and major rework
 ;		22.09.98 tracksize calculation added
@@ -229,7 +229,6 @@ CPU	=	68020
 	BOPT	ODd-		;disable mul optimizing
 	BOPT	ODe-		;disable mul optimizing
 	BOPT	wo-		;no optimize warnings
-	BOPT	sa+		;write symbol hunks
 
 	IFND	.passchk
 	DOSCMD	"WBuild >NIL:"

@@ -2,7 +2,7 @@
 ;  :Program.	fmt_std.s
 ;  :Contents.	decode standard dos track
 ;  :Author.	Wepl
-;  :Version	$Id: fmt_std.s 1.8 2007/05/24 22:23:28 wepl Exp wepl $
+;  :Version	$Id: fmt_std.s 1.9 2020/03/14 14:10:32 wepl Exp wepl $
 ;  :History.	11.11.02 separated from formats.s
 ;		12.11.02 optimized
 ;		20.02.04 new decode/encode parameters and rework

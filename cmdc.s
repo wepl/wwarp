@@ -2,7 +2,7 @@
 ;  :Program.	cmdc.s
 ;  :Contents.	command c - create
 ;  :Author.	Bert Jahn
-;  :Version	$Id: cmdc.s 1.21 2008/05/06 21:54:18 wepl Exp wepl $
+;  :Version	$Id: cmdc.s 1.22 2020/03/14 14:10:32 wepl Exp wepl $
 ;  :History.	12.06.00 separated from wwarp.asm
 ;		28.06.00 adapted for _cmdwork
 ;		06.08.00 inter sector gap check improved

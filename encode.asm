@@ -2,7 +2,7 @@
 ;  :Program.	encode.asm
 ;  :Contents.	encodes data to mfm
 ;  :Author.	Bert Jahn
-;  :Version	$Id: encode.asm 1.2 2005/04/07 23:36:50 wepl Exp wepl $
+;  :Version	$Id: encode.asm 1.3 2020/03/14 14:10:32 wepl Exp wepl $
 ;  :History.	06.02.02 initial
 ;		20.02.20 adapted for vamos build
 ;  :Requires.	OS V37+

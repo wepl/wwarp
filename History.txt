@@ -1,12 +1,12 @@
 
-***  1.29 (21.02.2020)
+***  1.29 (14.03.2020)
 	- fix:	command Zap did not open trackdisk.device
 	- new:	command Zap now also supports raw mfm data, first 16 bytes
 		are considered as sync and used for verify
 	- chg:	command Save on tracks of type RAW now honors a set sync, sync
 		number and length and will shift and cut the mfm data to save
 		accordingly
-	- fix:	console handling improved, works also on vamos now (somehow)
+	- fix:	console handling improved, works also on vamos now
 	source is accessible via: https://github.com/wepl/wwarp
 
 ***  1.28 (06.05.2008)

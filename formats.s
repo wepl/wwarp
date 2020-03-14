@@ -2,7 +2,7 @@
 ;  :Program.	formats.s
 ;  :Contents.	informations and routines regarding special formats
 ;  :Author.	Bert Jahn
-;  :Version	$Id: formats.s 1.26 2006/01/30 21:21:43 wepl Exp wepl $
+;  :Version	$Id: formats.s 1.27 2020/03/14 14:10:05 wepl Exp wepl $
 ;  :History.	18.03.01 created
 ;		23.07.01 rob format added
 ;		28.10.01 dos force made more tolerant

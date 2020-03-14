@@ -2,7 +2,7 @@
 ;  :Program.	cmdd.s
 ;  :Contents.	command d - dump
 ;  :Author.	Bert Jahn
-;  :Version	$Id: cmdd.s 1.6 2008/05/06 21:54:18 wepl Exp wepl $
+;  :Version	$Id: cmdd.s 1.7 2020/03/14 14:10:59 wepl Exp wepl $
 ;  :History.	02.11.02 separated from wwarp.asm
 ;		14.02.20 fix printing of long syncs
 ;  :Requires.	OS V37+, MC68020+

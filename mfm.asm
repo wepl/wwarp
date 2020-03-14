@@ -2,7 +2,7 @@
 ;  :Program.	mfm.asm
 ;  :Contents.	decodes mfm data
 ;  :Author.	Bert Jahn
-;  :Version	$Id: mfm.asm 1.4 2005/04/07 23:37:04 wepl Exp wepl $
+;  :Version	$Id: mfm.asm 1.5 2020/03/14 14:09:36 wepl Exp wepl $
 ;  :History.	27.02.00 initial
 ;		23.03.05 assembler options adjusted
 ;		20.02.20 adapted for vamos build

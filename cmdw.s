@@ -2,7 +2,7 @@
 ;  :Program.	cmdw.s
 ;  :Contents.	command w - write
 ;  :Author.	Bert Jahn
-;  :Version	$Id: cmdw.s 1.27 2008/04/23 21:32:09 wepl Exp wepl $
+;  :Version	$Id: cmdw.s 1.28 2020/03/14 14:10:59 wepl Exp wepl $
 ;  :History.	18.03.01 separated from wwarp.asm
 ;		20.10.01 verify supports multiple syncs now
 ;		21.10.01 multiple syncs added
