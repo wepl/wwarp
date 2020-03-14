@@ -23,15 +23,7 @@ STRINGS_I = 1
 ;		28.01.14 _VSNPrintF removed A5 usage for WHDLoad
 ;		29.01.14 _VSNPrintF added specifier %B to print a BPTR
 ;			 converted to an APTR
-;  :Copyright.	This program is free software; you can redistribute it and/or
-;		modify it under the terms of the GNU General Public License
-;		as published by the Free Software Foundation; either version 2
-;		of the License, or (at your option) any later version.
-;		This program is distributed in the hope that it will be useful,
-;		but WITHOUT ANY WARRANTY; without even the implied warranty of
-;		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;		GNU General Public License for more details.
-;		You can find the full GNU GPL online at: http://www.gnu.org
+;  :Copyright.	All rights reserved.
 ;  :Language.	68000 Assembler
 ;  :Translator.	Barfly 2.9
 ;---------------------------------------------------------------------------*
@@ -711,16 +703,16 @@ _VSNPrintF	movem.l	d2-d7/a2-a4,-(sp)
 .putintx_skip	dbra	d2,.putintx_loop
 		rts
 
-.dectab		dl	1000000000
-		dl	100000000
-		dl	10000000
-		dl	1000000
-		dl	100000
-		dl	10000
-		dl	1000
-		dl	100
-		dl	10
-		dl	0
+.dectab		dc.l	1000000000
+		dc.l	100000000
+		dc.l	10000000
+		dc.l	1000000
+		dc.l	100000
+		dc.l	10000
+		dc.l	1000
+		dc.l	100
+		dc.l	10
+		dc.l	0
 
 	ENDC
 		ENDM

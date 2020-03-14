@@ -22,6 +22,7 @@ DOSIO_I=1
 ;		14.02.20 _Print/_PrintArgs/_PrintInt return chars written
 ;		19.02.20 missing ENDC in CheckBreak added
 ;  :Requires.	-
+;  :Copyright.  All rights reserved.
 ;  :Language.	68000 Assembler
 ;  :Translator.	BASM 2.16
 ;---------------------------------------------------------------------------*
@@ -128,7 +129,7 @@ PRINTMORE = 1
 HLPBUFLEN = 32
 
 _PrintMore	movem.l	d2-d7/a2-a3/a6,-(a7)
-		sub.l	#HLPBUFLEN,a7
+		sub	#HLPBUFLEN,a7
 		move.l	a0,a3				;A3 = text
 
 		move.l	(gl_dosbase,GL),a6		;A6 = dosbase
