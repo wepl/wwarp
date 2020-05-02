@@ -16,10 +16,11 @@
 ifdef AMIGA
 
 # basm options: -x+ = use cachefile.library
-ASMOPT=-x+
+BASMOPT=-x+
 CP=Copy Clone
 DEST=C:
 RM=Delete
+DATE=wdate >.date
 
 # on Amiga default=DEBUG
 ifndef DEBUG
@@ -34,6 +35,7 @@ VASMOPT=-I$(INCLUDEOS3)
 CP=cp -p
 DEST=../sys/c/
 RM=rm
+DATE=date "+(%02d.%02m.%Y)" | xargs printf >.date
 VAMOS=vamos -qC68020 -m4096 -s128 --
 
 # on Vamos default=NoDEBUG
@@ -76,17 +78,17 @@ WWarp : wwarp.asm cmdc.s cmdd.s cmdw.s \
 	include/libraries include/wwarp.i \
 	io.s macros/ntypes.i \
 	sources/devices.i sources/dosio.i sources/error.i sources/files.i sources/strings.i
-	$(VAMOS) wdate >.date
+	$(DATE)
 	$(ASM) $(ASMOUT)$@ $<
 	$(CP) $@ $(DEST)
 
 encode : encode.asm macros/ntypes.i sources/dosio.i sources/strings.i sources/error.i sources/devices.i sources/files.i
-	$(VAMOS) wdate >.date
+	$(DATE)
 	$(ASM) $(ASMOUT)$@ $<
 	$(CP) $@ $(DEST)
 
 mfm : mfm.asm macros/ntypes.i sources/dosio.i sources/strings.i sources/error.i sources/devices.i
-	$(VAMOS) wdate >.date
+	$(DATE)
 	$(ASM) $(ASMOUT)$@ $<
 	$(CP) $@ $(DEST)
 
