@@ -63,12 +63,13 @@
 	INCLUDE	devices/trackdisk.i
 	INCLUDE	hardware/cia.i
 	INCLUDE	resources/misc.i
-	INCLUDE	libraries/trackwarp.i
-	INCLUDE	libraries/trackwarp_lib.i
 
+	INCLUDE	include/libraries/asyncio.i
+	INCLUDE	include/libraries/asyncio_lib.i
+	INCLUDE	include/libraries/trackwarp.i
+	INCLUDE	include/libraries/trackwarp_lib.i
+	INCLUDE	include/wwarp.i
 	INCLUDE	macros/ntypes.i
-
-	INCLUDE	wwarp.i
 
 SD_SECS		= 880		;total sectors of a 5.25" floppy
 DD_SECS		= 1760		;total sectors of a dd-floppy

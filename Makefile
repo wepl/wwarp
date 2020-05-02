@@ -1,8 +1,9 @@
 #
 # Makefile for WWarp
-# ©2019 Bert Jahn, All Rights Reserved
+# ©2019-2020 Bert Jahn, All Rights Reserved
 #
 # 2019-06-06 created
+# 2020-04-03 added vasm support
 #
 # $@ target
 # $< first dependency
@@ -13,33 +14,54 @@
 
 # different commands for build under Amiga or Vamos
 ifdef AMIGA
+
+# basm options: -x+ = use cachefile.library
 ASMOPT=-x+
 CP=Copy Clone
 DEST=C:
 RM=Delete
-else
-ASMOPT=-x-
-CP=cp -p
-DEST=../sys/c/
-RM=rm
-VAMOS=vamos -qC68020 -m4096 -s128 --
-endif
 
-DEPEND=vasm -depend=make -quiet
-
+# on Amiga default=DEBUG
 ifndef DEBUG
 DEBUG=1
 endif
 
-ifeq ($(DEBUG),1)
-# debug options
-ASMOPTDBG=-sa+ -dDEBUG=1
 else
-# normal options
-ASMOPTDBG=-OG+
+
+# basm options: -x- = don't use cachefile.library
+BASMOPT=-x-
+VASMOPT=-I$(INCLUDEOS3)
+CP=cp -p
+DEST=../sys/c/
+RM=rm
+VAMOS=vamos -qC68020 -m4096 -s128 --
+
+# on Vamos default=NoDEBUG
+ifndef DEBUG
+DEBUG=0
 endif
 
-ASM=$(VAMOS) basm -v+ -O+ -ODc- -ODd- -wo- -iinclude $(ASMOPT) $(ASMOPTDBG)
+endif
+
+DEPEND=vasm -depend=make -quiet
+
+ifeq ($(DEBUG),1)
+
+# Debug options
+# ASM creates executables, ASMB binary files, ASMO object files
+# BASM: -H to show all unused Symbols/Labels
+ASM=$(VAMOS) basm -v+ $(BASMOPT) -O+ -ODc- -ODd- -wo- -s1+ -dDEBUG=1
+ASMDEF=-d
+ASMOUT=-o
+
+else
+
+# normal options
+ASM=vasmm68k_mot $(VASMOPT) -Fhunkexe -nosym -quiet -wfail -opt-allbra -opt-clr -opt-lsl -opt-movem -opt-nmoveq -opt-pea -opt-size -opt-st
+ASMDEF=-D
+ASMOUT=-o 
+
+endif
 
 all : WWarp encode mfm
 
@@ -55,17 +77,17 @@ WWarp : wwarp.asm cmdc.s cmdd.s cmdw.s \
 	io.s macros/ntypes.i \
 	sources/devices.i sources/dosio.i sources/error.i sources/files.i sources/strings.i
 	$(VAMOS) wdate >.date
-	$(ASM) -o$@ $<
+	$(ASM) $(ASMOUT)$@ $<
 	$(CP) $@ $(DEST)
 
 encode : encode.asm macros/ntypes.i sources/dosio.i sources/strings.i sources/error.i sources/devices.i sources/files.i
 	$(VAMOS) wdate >.date
-	$(ASM) -o$@ $<
+	$(ASM) $(ASMOUT)$@ $<
 	$(CP) $@ $(DEST)
 
 mfm : mfm.asm macros/ntypes.i sources/dosio.i sources/strings.i sources/error.i sources/devices.i
 	$(VAMOS) wdate >.date
-	$(ASM) -o$@ $<
+	$(ASM) $(ASMOUT)$@ $<
 	$(CP) $@ $(DEST)
 
 clean :

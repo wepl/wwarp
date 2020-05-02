@@ -14,9 +14,6 @@
 ;  :To Do.
 ;---------------------------------------------------------------------------*
 
-	INCLUDE	libraries/asyncio.i
-	INCLUDE	libraries/asyncio_lib.i
-
 IOBUFLEN	= 2*2*$6d00	;buffer size for asyncio.library
 
 ;----------------------------------------
