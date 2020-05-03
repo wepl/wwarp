@@ -217,7 +217,7 @@ _Start		lea	(_Globals),GL
 		eor.l	d5,d1			;clock bits = not ( data before | after )
 		or.l	d1,d2			;merge clock bits
 		move.l	d2,(a1)+		;write odd data
-		move.w	d2,d6
+		move.w	d2,d6			;remember bit #0
 		and.l	d4,d3			;mask data bits
 		move.l	d3,d0
 		move.l	d3,d1
@@ -227,8 +227,8 @@ _Start		lea	(_Globals),GL
 		or.l	d0,d1			;clock bits = data before | after
 		eor.l	d5,d1			;clock bits = not ( data before | after )
 		or.l	d1,d3			;merge clock bits
-		move.l	d3,(a2)+		;write odd data
-		move.w	d3,d7
+		move.l	d3,(a2)+		;write even data
+		move.w	d3,d7			;remember bit #0
 		cmp.l	a0,a3
 		bne	.loopb
 .done
@@ -260,10 +260,8 @@ _Start		lea	(_Globals),GL
 		move.l	(gl_rc,GL),d7
 _rts		rts
 
-
 ;##########################################################################
 
-	CNOP 0,4
 _badkick	dc.b	"requires Kickstart 2.0 or better.",10,0
 _readargs	dc.b	"read arguments",0
 _nomem		dc.b	"not enough free store",0
