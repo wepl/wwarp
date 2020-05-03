@@ -5,6 +5,8 @@
 ;  :Version	$Id: encode.asm 1.3 2020/03/14 14:10:32 wepl Exp wepl $
 ;  :History.	06.02.02 initial
 ;		20.02.20 adapted for vamos build
+;		03.05.20 Blit/S option added which creates MFM suitable for
+;			 decoding using blitter, first all odd data, then all even
 ;  :Requires.	OS V37+
 ;  :Language.	68000 Assembler
 ;  :Translator.	Barfly V2.9
@@ -19,6 +21,7 @@
 	INCLUDE	dos/dos.i
 
 	INCLUDE	macros/ntypes.i
+	INCLUDE	macros/sprint.i
 
 ;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -29,6 +32,7 @@
 		LABEL	gl_rdarray
 		ULONG	gl_rd_input
 		ULONG	gl_rd_output
+		ULONG	gl_rd_blit
 		ULONG	gl_rc			;programs return code
 		ALIGNLONG
 		LABEL	gl_SIZEOF
@@ -48,21 +52,17 @@ CPU	=	68000
 	DOSCMD	"WDate  >.date"
 .passchk
 	ENDC
-	ELSE
-sprintx	MACRO
-		dc.b	\1
-	ENDM
 	ENDC
 
 Version		= 1
-Revision	= 1
+Revision	= 2
 
 	SECTION a,CODE
 
 		bra	_Start
 
 		dc.b	"$VER: "
-_txt_creator	sprintx	"encode %ld.%ld ",Version,Revision
+_txt_creator	sprint	"encode ",Version,".",Revision," "
 		INCBIN	".date"
 		dc.b	0
 	EVEN
@@ -145,7 +145,7 @@ _Start		lea	(_Globals),GL
 	;alloc destination mem
 		move.l	d7,d0
 		add.l	d0,d0
-		move.l	d0,a2				;a2 = save length
+		move.l	d0,a3				;a3 = save length
 		addq.l	#4,d0				;+4 security
 		moveq	#MEMF_ANY,d1
 		move.l	(gl_execbase,GL),a6
@@ -159,46 +159,90 @@ _Start		lea	(_Globals),GL
 		bra	.afterfreedest
 .memok
 	;process
-		move.l	d6,a0
-		move.l	d5,a1
-		clr.l	(a1)+
+		tst.l	(gl_rd_blit,GL)
+		bne	.blit
+
+	;create odd, even long by long
+		move.l	d6,a0			;a0 = source data
+		move.l	d5,a1			;a1 = dest mfm
+		clr.l	(a1)+			;skip first long because backfix
 		move.l	#$55555555,d4
-.loop		move.l	(a0)+,d2
-		move.l	d2,d3
+.loop		move.l	(a0)+,d2		;d2 = odd data
+		move.l	d2,d3			;d3 = even data
 		lsr.l	#1,d2
-		and.l	d4,d2
+		and.l	d4,d2			;mask data bits
 		move.l	d2,d0
-		eor.l	d4,d0
+		eor.l	d4,d0			;invert data bits
 		move.l	d0,d1
-		add.l	d0,d0
-		lsr.l	#1,d1
-		bset	#31,d1
-		and.l	d0,d1
-		or.l	d1,d2
+		add.l	d0,d0			;left shift inverted data bits
+		lsr.l	#1,d1			;right shift inverted data bits
+		bset	#31,d1			;always set data bit #0 from memory location before
+		and.l	d0,d1			;clock bits = inverted data before & after
+		or.l	d1,d2			;merge clock bits
 		btst	#0,-1(a1)
 		beq	.ok1
 		bclr	#31,d2
-.ok1		move.l	d2,(a1)+
-		and.l	d4,d3
+.ok1		move.l	d2,(a1)+		;write odd data
+		and.l	d4,d3			;mask data bits
 		move.l	d3,d0
-		eor.l	d4,d0
+		eor.l	d4,d0			;invert data bits
 		move.l	d0,d1
-		add.l	d0,d0
-		lsr.l	#1,d1
-		bset	#31,d1
-		and.l	d0,d1
-		or.l	d1,d3
+		add.l	d0,d0			;left shift inverted data bits
+		lsr.l	#1,d1			;right shift inverted data bits
+		bset	#31,d1			;always set data bit #0 from memory location before
+		and.l	d0,d1			;clock bits = inverted data before & after
+		or.l	d1,d3			;merge clock bits
 		btst	#0,-1(a1)
 		beq	.ok2
 		bclr	#31,d3
-.ok2		move.l	d3,(a1)+
+.ok2		move.l	d3,(a1)+		;write even data
 		subq.l	#4,d7
 		bne	.loop
+		bra	.done
 
+	;create all odd, then all even
+	;suitable for blitter decoding and used in trackdisk.device
+.blit		move.l	d6,a0			;a0 = source data
+		move.l	d5,a1			;a1 = dest mfm odd
+		lea	(a1,d7.l),a2		;a2 = dest mfm even
+		clr.l	(a1)+			;skip first long because backfix
+		move.l	#$55555555,d4
+.loopb		move.l	(a0)+,d2		;d2 = odd data
+		move.l	d2,d3			;d3 = even data
+		lsr.l	#1,d2
+		and.l	d4,d2			;mask data bits
+		move.l	d2,d0
+		eor.l	d4,d0			;invert data bits
+		move.l	d0,d1
+		add.l	d0,d0			;left shift inverted data bits
+		lsr.l	#1,d1			;right shift inverted data bits
+		bset	#31,d1			;always set data bit #0 from memory location before
+		and.l	d0,d1			;clock bits = inverted data before & after
+		or.l	d1,d2			;merge clock bits
+		btst	#0,-1(a1)
+		beq	.ok1b
+		bclr	#31,d2
+.ok1b		move.l	d2,(a1)+		;write odd data
+		and.l	d4,d3			;mask data bits
+		move.l	d3,d0
+		eor.l	d4,d0			;invert data bits
+		move.l	d0,d1
+		add.l	d0,d0			;left shift inverted data bits
+		lsr.l	#1,d1			;right shift inverted data bits
+		bset	#31,d1			;always set data bit #0 from memory location before
+		and.l	d0,d1			;clock bits = inverted data before & after
+		or.l	d1,d3			;merge clock bits
+		btst	#0,-1(a2)
+		beq	.ok2b
+		bclr	#31,d3
+.ok2b		move.l	d3,(a2)+		;write even data
+		subq.l	#4,d7
+		bne	.loopb
+.done
 	;save file
-		move.l	a2,d0
+		move.l	a3,d0
 		move.l	d5,a0
-		add.l	#4,a0
+		add.l	#4,a0			;skip safety long
 		move.l	(gl_rd_output,GL),a1
 		bsr	_SaveFileMsg
 
@@ -238,6 +282,7 @@ _dosname	DOSNAME
 
 _template	dc.b	"Input/A"		;file to encode
 		dc.b	",Output/A"		;file to save
+		dc.b	",Blit/S"		;blitter mode, first all odd mfm then even
 		dc.b	0
 
 ;##########################################################################

@@ -35,7 +35,7 @@ VASMOPT=-I$(INCLUDEOS3)
 CP=cp -p
 DEST=../sys/c/
 RM=rm
-DATE=date "+(%02d.%02m.%Y)" | xargs printf >.date
+DATE=date "+(%d.%m.%Y)" | xargs printf >.date
 VAMOS=vamos -qC68020 -m4096 -s128 --
 
 # on Vamos default=NoDEBUG
