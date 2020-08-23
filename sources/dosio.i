@@ -21,6 +21,7 @@ DOSIO_I=1
 ;			 timeout if terminal doesn't replies to control sequences
 ;		14.02.20 _Print/_PrintArgs/_PrintInt return chars written
 ;		19.02.20 missing ENDC in CheckBreak added
+;		05.04.20 specified index register size in _FGetS (basm/vasm)
 ;  :Requires.	-
 ;  :Copyright.  All rights reserved.
 ;  :Language.	68000 Assembler
@@ -439,15 +440,15 @@ _FGetS		movem.l	d3/a6,-(a7)
 .len		tst.l	d0
 		beq	.end
 		move.l	(a7),a0
-		cmp.b	#10,(-1,a0,d0)		;LF
+		cmp.b	#10,(-1,a0,d0.l)	;LF
 		beq	.cut
-		cmp.b	#13,(-1,a0,d0)		;CR
+		cmp.b	#13,(-1,a0,d0.l)	;CR
 		beq	.cut
-		cmp.b	#" ",(-1,a0,d0)		;SPACE
+		cmp.b	#" ",(-1,a0,d0.l)	;SPACE
 		beq	.cut
-		cmp.b	#"	",(-1,a0,d0)	;TAB
+		cmp.b	#"	",(-1,a0,d0.l)	;TAB
 		bne	.end
-.cut		clr.b	(-1,a0,d0)
+.cut		clr.b	(-1,a0,d0.l)
 		subq.l	#1,d0
 		bra	.len
 .end		movem.l	(a7)+,d0/d3/a6
