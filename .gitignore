@@ -2,7 +2,8 @@ RCS
 .DS_Store
 .date
 *.wwp
-track.*
-mfm
 encode
+mfm
+td
+track.*
 WWarp
