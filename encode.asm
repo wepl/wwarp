@@ -54,7 +54,7 @@ Revision	= 2
 		bra	_Start
 
 		dc.b	"$VER: "
-_txt_creator	sprint	"encode ",Version,".",Revision," "
+_txt_creator	sprint	<"encode ">,Version,<".">,Revision,<" ">
 		INCBIN	".date"
 		dc.b	0
 	EVEN
