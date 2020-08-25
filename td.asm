@@ -4,6 +4,7 @@
 ;		data using trackdisk.device
 ;  :Author.	Bert Jahn
 ;  :History.	2020-08-23 initial
+;		2020-08-24 track option added
 ;  :Requires.	OS V37+
 ;  :Copyright.	© 2020 Bert Jahn, All Rights Reserved
 ;  :Language.	68000 Assembler
@@ -31,6 +32,7 @@
 		ULONG	gl_rd_data		; data filename
 		ULONG	gl_rd_label		; label data filename
 		ULONG	gl_rd_sector		; sector number
+		ULONG	gl_rd_track		; track number
 		ULONG	gl_rd_write		; write instead read
 		ULONG	gl_rd_unit		; unit number
 		ULONG	gl_rc			; programs return code
@@ -129,13 +131,19 @@ _Start		lea	(_Globals),GL
 		move.l	(gl_io,GL),a5		; A5 = io
 
 	; message
-		move.l	(gl_rd_sector,GL),a0
+		move.l	(gl_rd_track,GL),d0
+		beq	.notrack
+		move.l	d0,a0
 		move.l	(a0),d0
-		move.l	#TD_SECTOR,d7
+		mulu.w	(gl_io+8+dg_TrackSectors+2,GL),d0
+.notrack	move.l	(gl_rd_sector,GL),d1
+		beq	.nosector
+		move.l	d1,a0
+		add.l	(a0),d0
+.nosector	move.l	#TD_SECTOR,d7
 		mulu.w	d0,d7			; D7 = offset
 		move.l	d0,d6
-		move.l	(gl_io+8+dg_TrackSectors,GL),d1
-		divu	d1,d6
+		divu.w	(gl_io+8+dg_TrackSectors+2,GL),d6
 		swap	d6			; D6 = track/sector
 		move.l	d6,-(a7)		; track/sector
 		move.l	d7,-(a7)		; offset
@@ -349,6 +357,7 @@ _trackdisk	dc.b	"trackdisk.device",0
 _template	dc.b	"D=Data/K/A"		; data filename
 		dc.b	",L=LabelData/K"	; label data filename
 		dc.b	",S=Sector/K/N"		; sector number to read/write
+		dc.b	",T=Track/K/N"		; track number to read/write
 		dc.b	",Write/S"		; write instead read
 		dc.b	",Unit/K/N"		; unit number
 		dc.b	0
