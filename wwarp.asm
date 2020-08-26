@@ -69,6 +69,7 @@
 	INCLUDE	include/libraries/trackwarp.i
 	INCLUDE	include/libraries/trackwarp_lib.i
 	INCLUDE	include/wwarp.i
+	INCLUDE	include/uaedebug.i
 	INCLUDE	macros/ntypes.i
 
 SD_SECS		= 880		;total sectors of a 5.25" floppy
