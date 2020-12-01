@@ -8,15 +8,15 @@
 ;		20.02.04 new decode/encode parameters and rework
 ;		04.11.04 changes for rnclold support
 ;		12.01.07 wrong comments for odd/even exchanged
+;		08.09.20 comments improved
 ;  :Requires.	OS V37+, MC68020+
 ;  :Language.	68020 Assembler
 ;  :Translator. Barfly V2.9
 ;  :To Do.
 ;  :Info.
 ;---------------------------------------------------------------------------*
-; $000 word	2	MFM value 0xAAAA AAAA (used for timing ?)
-; $004 word	1	MFM value 0x4489
-; $006 word	1	MFM value 0x4489
+; $000 word	2	MFM value 0x2AAAAAAA or 0xAAAAAAAA
+; $004 word	2	MFM value 0x44894489
 ; $008 long	1	info (odd bits)
 ; $00c long	1	info (even bits)
 ;		decoded long is : ff TT SS SG
@@ -34,11 +34,11 @@
 ;			ff010702
 ;			ff010801
 ;				-- inter-sector-gap here !
-;			ff01090b (b means -1 ?)
-;			ff010a0a (a means -2 ?)
+;			ff01090b
+;			ff010a0a
 ; $010 long	4	sector label (odd)
 ; $020 long	4	sector label (even)
-;			decoded value seems to be always 0
+;			decoded value must be always 0
 ; $030 long	1	header checksum (odd)
 ; $034 long	1	header checksum (even)
 ;		computed on mfm longs between offsets 8 and $30, 2*(1+4) longs
@@ -70,6 +70,10 @@ _decode_std	link	LOC,#lc1_SIZEOF
 		move.l	d0,d5			;D5 = mfm-length
 		move.l	a0,a2			;A2 = mfm-buffer
 		move.l	a1,a3			;A3 = dest-buffer
+
+	;the sync used will position at the first sector
+	;before the gap so that checking the inter sector gap
+	;for extra data is simplified
 
 	;fast check for standard dos track
 		move.l	#$55555555,d4		;D4 = mfm decode
