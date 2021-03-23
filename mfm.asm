@@ -50,10 +50,6 @@ CPU	=	68000
 	BOPT	ODd-		;disable mul optimizing
 	BOPT	ODe-		;disable mul optimizing
 	BOPT	wo-		;no optimize warnings
-	IFND	.passchk
-	DOSCMD	"WDate >.date"
-.passchk
-	ENDC
 	ENDC
 
 Version		= 0
