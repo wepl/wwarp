@@ -704,6 +704,10 @@ _help		lea	(_txt_help),a0
 		move.l	a2,d0
 		bne	.nextfmt
 
+		lea	(_txt_help2),a0
+.copy2		move.b	(a0)+,(a6)+
+		bne	.copy2
+
 		lea	(gl_tmpbuf,GL),a0
 		bra	_PrintMore
 
@@ -2920,6 +2924,8 @@ _txt_help	dc.b	155,"1m"
 		dc.b	"wlen=write length, flags: I=index F=force)",10
 		dc.b	"  # name        slen  len  mrlen  wlen flags sync"
 _txt_nl		dc.b	10,0
+_txt_help2	dc.b	155,"4mhints:",155,"0m",10
+		dc.b	"std first sector after gap: 448944895500002555000029&ffffffffff00007fff00007f",10,0
 _fmtinfo1	dc.b	"%3d ",0
 _fmtinfo2	dc.b	"$%4x $%4x $%4x $%4x    ",0
 _fmtsynctab	dc.b	"					     ",0
