@@ -23,6 +23,7 @@ CP=Copy Clone
 DEST=C:
 RM=Delete
 DATE=wdate >.date
+BUILD=wbuild >NIL
 
 # on Amiga default=DEBUG
 ifndef DEBUG
@@ -39,6 +40,7 @@ CP=cp -p
 DEST=../sys/c/
 RM=rm
 DATE=date "+(%d.%m.%Y)" | xargs printf >.date
+BUILD=expr $(shell cat .build) "+" 1 | xargs printf >.build
 VAMOS=vamos -qC68020 -m4096 -s128 --
 
 # on Vamos default=NoDEBUG
@@ -88,6 +90,7 @@ WWarp : wwarp.asm cmdc.s cmdd.s cmdw.s \
 	io.s macros/ntypes.i macros/sprint.i \
 	sources/devices.i sources/dosio.i sources/error.i sources/files.i sources/strings.i
 	$(DATE)
+	$(BUILD)
 	$(ASM) $(ASMOUT)$@ $<
 	$(CP) $@ $(DEST)
 
