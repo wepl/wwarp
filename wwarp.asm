@@ -71,6 +71,7 @@
 	INCLUDE	include/wwarp.i
 	INCLUDE	include/uaedebug.i
 	INCLUDE	macros/ntypes.i
+	INCLUDE	macros/sprint.i
 
 SD_SECS		= 880		;total sectors of a 5.25" floppy
 DD_SECS		= 1760		;total sectors of a dd-floppy
@@ -237,10 +238,6 @@ CPU	=	68020
 	DOSCMD	"WDate >.date"
 .passchk
 	ENDC
-	ELSE
-sprintx	MACRO
-	dc.b	\1
-	ENDM
 	ENDC
 
 Version		= 1
@@ -251,7 +248,7 @@ Revision	= 30
 		bra	_Start
 
 		dc.b	"$VER: "
-_txt_creator	sprintx	"WWarp %ld.%ld [build ",Version,Revision
+_txt_creator	sprint	<"WWarp ">,Version,<".">,Revision,<" [build ">
 		INCBIN	".build"
 		dc.b	"] "
 		INCBIN	".date"
@@ -2879,7 +2876,7 @@ _tddisable81	tst.b	(gl_tdpatchdone,GL)
 ;##########################################################################
 
 _txt_help	dc.b	155,"1m"
-		sprintx	"WWarp %ld.%ld [build ",Version,Revision
+		sprint	<"WWarp ">,Version,<".">,Revision,<" [build ">
 	INCBIN	".build"
 		dc.b	"] "
 	INCBIN	".date"

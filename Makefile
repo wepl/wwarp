@@ -85,7 +85,7 @@ WWarp : wwarp.asm .date cmdc.s cmdd.s cmdw.s \
 	fmt_turrican1.s fmt_turrican2.s fmt_turrican3a_1800.s fmt_turrican3b_1A00.s \
 	fmt_twilight.s fmt_vision.s fmt_zzkj.s formats.s \
 	include/libraries include/wwarp.i \
-	io.s macros/ntypes.i \
+	io.s macros/ntypes.i macros/sprint.i \
 	sources/devices.i sources/dosio.i sources/error.i sources/files.i sources/strings.i
 	$(ASM) $(ASMOUT)$@ $<
 	$(CP) $@ $(DEST)
@@ -94,7 +94,7 @@ encode : encode.asm .date macros/sprint.i sources/dosio.i sources/strings.i sour
 	$(ASM) $(ASMOUT)$@ $<
 	$(CP) $@ $(DEST)
 
-mfm : mfm.asm .date macros/ntypes.i sources/dosio.i sources/strings.i sources/error.i sources/devices.i
+mfm : mfm.asm .date macros/ntypes.i macros/sprint.i sources/dosio.i sources/strings.i sources/error.i sources/devices.i
 	$(ASM) $(ASMOUT)$@ $<
 	$(CP) $@ $(DEST)
 

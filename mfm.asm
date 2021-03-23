@@ -22,6 +22,7 @@
 	INCLUDE	dos/dos.i
 
 	INCLUDE	macros/ntypes.i
+	INCLUDE	macros/sprint.i
 
 ;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -53,21 +54,17 @@ CPU	=	68000
 	DOSCMD	"WDate >.date"
 .passchk
 	ENDC
-	ELSE
-sprintx	MACRO
-		dc.b	\1
-	ENDM
 	ENDC
 
 Version		= 0
-Revision	= 2
+Revision	= 3
 
 	SECTION a,CODE
 
 		bra	_Start
 
 		dc.b	"$VER: "
-_txt_creator	sprintx	"mfm %ld.%ld ",Version,Revision
+_txt_creator	sprint	<"mfm ">,Version,<".">,Revision,<" ">
 		INCBIN	".date"
 		dc.b	0
 	EVEN
