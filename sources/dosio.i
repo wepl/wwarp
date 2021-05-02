@@ -22,6 +22,7 @@ DOSIO_I=1
 ;		14.02.20 _Print/_PrintArgs/_PrintInt return chars written
 ;		19.02.20 missing ENDC in CheckBreak added
 ;		05.04.20 specified index register size in _FGetS (basm/vasm)
+;		02.05.21 fixed cursor down in _PrintMore for AmigaShell
 ;  :Requires.	-
 ;  :Copyright.  All rights reserved.
 ;  :Language.	68000 Assembler
@@ -177,10 +178,16 @@ _PrintMore	movem.l	d2-d7/a2-a3/a6,-(a7)
 		lea	.status,a0
 		bsr	.write
 
+	; for sequences e.g. cursor down = 155,'B' the AmigaShell
+	; returns 2 single bytes as reads, KingCon/ViNCEd are returning
+	; one read of two chars!
 .wait		move.l	d7,d1
 		move.l	a7,d2
-		moveq	#2,d3
+		moveq	#1,d3
 		jsr	(_LVORead,a6)
+
+		cmp.b	#155,(a7)
+		beq	.csi
 
 		lea	.space,a2
 		cmp.b	#" ",(a7)
@@ -188,10 +195,19 @@ _PrintMore	movem.l	d2-d7/a2-a3/a6,-(a7)
 		lea	.return,a2
 		cmp.b	#13,(a7)
 		beq	.key
-		cmp.w	#155<<8+"B",(a7)		;cursor down
-		beq	.key
 		lea	.end,a2
 		cmp.b	#"q",(a7)
+		beq	.key
+		bra	.wait
+
+	; read second byte of CSI sequence
+.csi		move.l	d7,d1
+		move.l	a7,d2
+		moveq	#1,d3
+		jsr	(_LVORead,a6)
+
+		lea	.return,a2
+		cmp.b	#"B",(a7)			;cursor down
 		bne	.wait
 
 .key		lea	.statusclear,a0
