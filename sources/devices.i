@@ -3,9 +3,6 @@ DEVICES_I = 1
 ;*---------------------------------------------------------------------------
 ;  :Author.	Bert Jahn
 ;  :Contens.	macros for processing devices
-;  :EMail.	wepl@kagi.com
-;  :Address.	Franz-Liszt-Straﬂe 16, Rudolstadt, 07404, Germany
-;  :Version.	$Id: devices.i 1.3 2014/01/29 00:04:40 wepl Exp wepl $
 ;  :History.	29.12.95 separated from WRip.asm
 ;		18.01.96 IFD Label replaced by IFD Symbol
 ;			 because Barfly optimize problems

@@ -3,9 +3,6 @@ STRINGS_I = 1
 ;*---------------------------------------------------------------------------
 ;  :Author.	Bert Jahn
 ;  :Contens.	macros for processing strings
-;  :EMail.	wepl@kagi.com
-;  :Address.	Franz-Liszt-Straße 16, Rudolstadt, 07404, Germany
-;  :Version.	$Id: strings.i 1.5 2014/02/01 01:38:19 wepl Exp wepl $
 ;  :History.	29.12.95 separated from WRip.asm
 ;		18.01.96 IFD Label replaced by IFD Symbol
 ;			 because Barfly optimize problems
@@ -23,6 +20,8 @@ STRINGS_I = 1
 ;		28.01.14 _VSNPrintF removed A5 usage for WHDLoad
 ;		29.01.14 _VSNPrintF added specifier %B to print a BPTR
 ;			 converted to an APTR
+;		03.08.21 optimized _StrLen
+;		13.11.23 _StrCaseCmp added
 ;  :Copyright.	All rights reserved.
 ;  :Language.	68000 Assembler
 ;  :Translator.	Barfly 2.9
@@ -40,16 +39,17 @@ STRINGS_I = 1
 *##	_etoi		source(a0) --> integer(d0),stringleft(a0)
 *##	UPPER		char(dx) --> char(dx)
 *##	_StrLen		source(a0) --> length(d0)
+*##	_StrCaseCmp	string(a0),string(a1) --> relation(d0)
 *##	_StrNCaseCmp	string(a0),string(a1),len(d0) --> relation(d0)
 *##	_VSNPrintF	buffer(a0),fmt(a1),argarray(a2),bufsize(d0) --> numchars(d0),bufferleft(a0)
 
 ;----------------------------------------
-; Formatiert String (printf)
-; Übergabe :	D0 = ULONG Länge des Buffers
-;		A0 = APTR FormatString
-;		A1 = APTR Argumente
-;		A2 = Buffer
-; Rückgabe :	-
+; format string (printf)
+; IN:	D0 = ULONG length of buffer
+;	A0 = APTR format
+;	A1 = APTR arguments
+;	A2 = APTR buffer to fill
+; OUT:	-
 
 FormatString	MACRO
 	IFND	FORMATSTRING
@@ -79,10 +79,10 @@ _FormatString	movem.l	a2-a3/a6,-(a7)
 		ENDM
 
 ;----------------------------------------
-; Berechnet String-Adresse über Zuordungstabelle
-; Übergabe :	D0 = WORD   value
-;		A0 = STRUCT Zuordnungstabelle
-; Rückgabe :	D0 = CPTR   string or NULL
+; get string from table
+; IN:	D0 = WORD   value
+;	A0 = STRUCT table
+; OUT:	D0 = CPTR   string or NULL
 
 DoStringNull	MACRO
 	IFND	DOSTRINGNULL
@@ -112,10 +112,12 @@ _DoStringNull
 		ENDM
 
 ;----------------------------------------
-; Berechnet String-Adresse über Zuordungstabelle (data not reetrant !)
-; Übergabe :	D0 = WORD   value
-;		A0 = STRUCT Zuordnungstabelle
-; Rückgabe :	D0 = CPTR   string
+; get string from table
+; return generated string if no string is available
+; not reetrant in case generated is returned
+; IN :	D0 = WORD   value
+;	A0 = STRUCT table
+; OUT :	D0 = CPTR   string
 
 DoString	MACRO
 	IFND	DOSTRING
@@ -135,7 +137,7 @@ _DoString	ext.l	d0
 		addq.l	#8,a7
 		rts
 
-.maketxt		move.l	a7,a1			;args
+.maketxt	move.l	a7,a1			;args
 		moveq	#8,d0			;buflen
 		lea	(.fmt),a0		;format string
 		lea	(.buf),a2		;buffer
@@ -152,11 +154,11 @@ _DoString	ext.l	d0
 		ENDM
 
 ;----------------------------------------
-; Kopiert String
-; Übergabe :	D0 = LONG dest buffer size
-;		A0 = CPTR  source string
-;		A1 = APTR  dest buffer
-; Rückgabe :	D0 = LONG  success (fail if buffer to small)
+; copy string
+; IN:	D0 = LONG dest buffer size
+;	A0 = CPTR source string
+;	A1 = APTR dest buffer
+; OUT:	D0 = LONG success (fails if buffer to small)
 
 CopyString	MACRO
 	IFND	COPYSTRING
@@ -177,9 +179,9 @@ _CopyString	tst.l	d0
 		ENDM
 
 ;----------------------------------------
-; Entfernt Endung
-; Übergabe :	A0 = CPTR  source string
-; Rückgabe :	D0 = LONG  success (true if a extension is removed)
+; remove name extension after .
+; IN:	A0 = CPTR source string
+; OUT:	D0 = LONG success (true if a extension is removed)
 
 RemoveExtension	MACRO
 	IFND	REMOVEEXTENSION
@@ -203,7 +205,7 @@ _RemoveExtension
 		ENDM
 
 ;----------------------------------------
-; Hängt String hinten an
+; append string at the end of existing string
 ; IN:	D0 = LONG  destination buffer size
 ;	A0 = CPTR  source string (to append)
 ;	A1 = CPTR  destination string (to append on)
@@ -236,13 +238,13 @@ _AppendString	tst.l	d0
 		ENDM
 
 ;----------------------------------------
-; Umwandlung ASCII to Integer
+; converts ASCII to Integer
 ; asciiint ::= [+|-] { {<digit>} | ${<hexdigit>} }¹
 ; hexdigit ::= {012456789abcdefABCDEF}¹
 ; digit    ::= {0123456789}¹
-; Übergabe :	A0 = CPTR ascii | NIL
-; Rückgabe :	D0 = LONG integer (on error=0)
-;		A0 = CPTR first char after translated ASCII
+; IN:	A0 = CPTR ascii | NULL
+; OUT:	D0 = LONG integer (on error=0)
+;	A0 = CPTR first char after translated ASCII
 
 atoi		MACRO
 	IFND	ATOI
@@ -308,12 +310,12 @@ _atoi		movem.l	d6-d7,-(a7)
 		ENDM
 
 ;----------------------------------------
-; Umwandlung Expression to Integer
+; converts Expression to Integer
 ; asiiexp ::= {<space>} <asciiint> { {<space>} {+|-}¹ {<space>} <asciiint> }
 ; space   ::= {SPACE|TAB}
-; Übergabe :	A0 = CPTR ascii | NIL
-; Rückgabe :	D0 = LONG integer (on error=0)
-;		A0 = CPTR first char after translated ASCII
+; IN:	A0 = CPTR ascii | NIL
+; OUT:	D0 = LONG integer (on error=0)
+;	A0 = CPTR first char after translated ASCII
 
 etoi		MACRO
 	IFND	ETOI
@@ -367,13 +369,12 @@ _etoi		movem.l	d2-d3,-(a7)
 StrLen	MACRO
 	IFND	STRLEN
 STRLEN=1
-_StrLen		moveq	#0,d0		;length
-		move.l	a0,d1
+_StrLen		move.l	a0,d0
 		beq	.end
 .loop		tst.b	(a0)+
-		beq	.end
-		addq.l	#1,d0
-		bra	.loop
+		bne	.loop
+		sub.l	a0,d0
+		not.l	d0		;neg.l d0 & sub.l #1,d0
 .end		rts
 	ENDC
 		ENDM
@@ -392,6 +393,45 @@ UPPER	MACRO
 	ENDM
 
 ;----------------------------------------
+; compare two strings case insensitiv (only 7-bit ASCII !!!)
+; (confirming BSD 4.3)
+; IN :	A0 = CPTR  string 1
+;	A1 = CPTR  string 2
+; OUT :	D0 = ULONG <0 if a0 less than a1
+;		    0 if a0 equal a1
+;		   >0 if a0 greater than a1
+;	Z = f(d0)
+
+StrCaseCmp	MACRO
+	IFND	STRCASECMP
+STRCASECMP=1
+_StrCaseCmp	cmp.l	a0,a1		;string equal ?
+		beq	.equal
+		move.l	a0,d0
+		beq	.less
+		move.l	a1,d0
+		beq	.greater
+
+.next		move.b	(a0)+,d0
+		UPPER	d0
+		move.b	(a1)+,d1
+		UPPER	d1
+		cmp.b	d0,d1
+		bhi	.less
+		blo	.greater
+		tst.b	d0
+		bne	.next
+
+.equal		moveq	#0,d0
+		rts
+.less		moveq	#-1,d0
+		rts
+.greater	moveq	#1,d0
+		rts
+	ENDC
+		ENDM
+
+;----------------------------------------
 ; compare two strings with given length case insensitiv (only 7-bit ASCII !!!)
 ; (confirming BSD 4.3)
 ; IN :	D0 = ULONG amount of chars to compare
@@ -400,6 +440,7 @@ UPPER	MACRO
 ; OUT :	D0 = ULONG <0 if a0 less than a1
 ;		    0 if a0 equal a1
 ;		   >0 if a0 greater than a1
+;	Z = f(d0)
 
 StrNCaseCmp	MACRO
 	IFND	STRNCASECMP
@@ -414,7 +455,7 @@ _StrNCaseCmp	move.l	d2,-(a7)
 		beq	.less
 		move.l	a1,d1
 		beq	.greater
-		
+
 .next		move.b	(a0)+,d1
 		UPPER	d1
 		move.b	(a1)+,d2

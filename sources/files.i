@@ -3,9 +3,6 @@ FILES_I=1
 ;*---------------------------------------------------------------------------
 ;  :Author.	Bert Jahn
 ;  :Contens.	macros for input/output via dos.library
-;  :EMail.	wepl@whdload.de
-;  :Address.	Clara-Zetkin-Straﬂe 52, Zwickau, 08058, Germany
-;  :Version.	$Id: files.i 1.6 2010/04/01 01:04:00 wepl Exp wepl $
 ;  :History.	13.01.96 separated from WRip.asm
 ;		18.01.96 IFD Label replaced by IFD Symbol
 ;			 because Barfly optimize problems

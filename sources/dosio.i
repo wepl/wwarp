@@ -3,8 +3,6 @@ DOSIO_I=1
 ;*---------------------------------------------------------------------------
 ;  :Author.	Bert Jahn
 ;  :Contens.	macros for input/output via dos.library
-;  :EMail.	wepl@whdload.de
-;  :Version.	$Id: dosio.i 1.9 2014/01/29 00:04:15 wepl Exp wepl $
 ;  :History.	30.12.95 separated from WRip.asm
 ;		18.01.96 IFD Label replaced by IFD Symbol
 ;			 because Barfly optimize problems
@@ -23,6 +21,7 @@ DOSIO_I=1
 ;		19.02.20 missing ENDC in CheckBreak added
 ;		05.04.20 specified index register size in _FGetS (basm/vasm)
 ;		02.05.21 fixed cursor down in _PrintMore for AmigaShell
+;		14.02.24 _PrintMore: better support for terminals with small width
 ;  :Requires.	-
 ;  :Copyright.  All rights reserved.
 ;  :Language.	68000 Assembler
@@ -122,6 +121,9 @@ _Print		sub.l	a1,a1
 ;----------------------------------------
 ; print text, when console window is filled wait for a key
 ; and then continue
+; initial CLI Kick 3.1 PAL
+; 60 chars:	61x26
+; 80 chars:	77x30
 ; IN:	A0 = CPTR text to display
 ; OUT:	-
 
@@ -157,22 +159,45 @@ _PrintMore	movem.l	d2-d7/a2-a3/a6,-(a7)
 
 		bsr	.getwin
 
-.nextscreen	move.l	d4,d1
-		subq.l	#1,d1				;lines to write
+.nextscreen	move.l	d4,d1				;D1 = lines to write
+		subq.l	#1,d1				;place for status line
 
-.nextlines	move.l	a3,d2
-		moveq	#0,d3
+.nextline	move.l	a3,a0				;A0 = text
+		moveq	#0,d3				;D3 = length to print
+		moveq	#0,d2				;D2 = length of current line
 .loop		move.b	(a3)+,d0
 		beq	.print
-		addq.l	#1,d3
-		cmp.b	#10,d0
+		addq.l	#1,d3				;length to print
+		cmp.b	#10,d0				;new line?
+		beq	.nl
+		cmp.b	#155,d0				;CSI? don't count for line length
+		bne	.nocsi
+		subq.l	#2,d2				;assumed 3 byte CSI sequences only
+		bra	.loop
+.nocsi		cmp.b	#9,d0				;tabulator?
+		bne	.notab
+		addq.l	#8,d2
+		and.w	#$fff8,d2			;new position
+		subq.l	#1,d2				;correct the following add
+.notab		addq.l	#1,d2				;length of line
+		cmp.l	d2,d5				;terminal width
+		bgt	.loop				;signed compare because d2 can be negative because CSI
+	;if line is full we must check if a new line follows
+	;in that case the following new line must be counted as nl
+		cmp.b	#10,(a3)
+		bne	.nl
+		addq.l	#1,d3				;adjust buffer length
+		addq.l	#1,a3				;skip nl in buffer
+.nl		moveq	#0,d2				;reset length of current line
+		subq.l	#1,d1				;one line less
 		bne	.loop
-		subq.l	#1,d1
-		bne	.loop
-.print		move.l	d6,d1
+.print		move.l	d6,d1				;fh
+		move.l	a0,d2				;text
 		jsr	(_LVOWrite,a6)
 
-		tst.b	(-1,a3)
+		tst.b	(-1,a3)				;was there end?
+		beq	.end
+		tst.b	(a3)				;is there end?
 		beq	.end
 
 		lea	.status,a0
@@ -219,7 +244,7 @@ _PrintMore	movem.l	d2-d7/a2-a3/a6,-(a7)
 		bra	.nextscreen
 
 .return		moveq	#1,d1
-		bra	.nextlines
+		bra	.nextline
 .end
 		move.l	d7,d1
 		moveq	#0,d2				;mode = con
@@ -299,10 +324,35 @@ _PrintMore	movem.l	d2-d7/a2-a3/a6,-(a7)
 		bne	.getwin_err
 		cmp.b	#"r",(a0)+
 		bne	.getwin_err
-		rts
 
-.getwin_err	move.l	#80,d5				;D5 = width
-		move.l	#25,d4				;D4 = height
+	;cut the status line if it doesn't fit on terminal width
+	;get length of status line in chars
+		moveq	#0,d0
+		lea	(.status),a0
+.getwin_stcnt	move.b	(a0)+,d1
+		beq	.getwin_stcnte
+		addq.l	#1,d0
+		cmp.b	#155,d1
+		bne	.getwin_stcnt
+		subq.l	#3,d0				;assumed CSI 3 byte sequences only
+		bra	.getwin_stcnt
+.getwin_stcnte
+		sub.l	d5,d0
+		blo	.getwin_rts
+	;search end before CSI
+.getwin_stsea	cmp.b	#155,-(a0)
+		bne	.getwin_stsea
+	;cut status line
+		move.l	a0,a1
+		sub.l	d0,a1
+		subq.l	#1,a1
+.getwin_stcut	move.b	(a0)+,(a1)+
+		bne	.getwin_stcut
+
+.getwin_rts	rts
+
+.getwin_err	move.l	#77,d5				;D5 = width
+		move.l	#30,d4				;D4 = height
 .rts		rts
 
 .getnum		moveq	#0,d0

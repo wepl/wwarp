@@ -3,8 +3,6 @@ ERROR_I=1
 ;*---------------------------------------------------------------------------
 ;  :Author.	Bert Jahn
 ;  :Contens.	macros for error handling
-;  :EMail.	wepl@whdload.de
-;  :Version.	$Id: error.i 1.6 2008/05/06 22:02:44 wepl Exp wepl $
 ;  :History.	30.12.95 separated from WRip.asm
 ;		18.01.96 IFD Label replaced by IFD Symbol
 ;			 because Barfly optimize problems
